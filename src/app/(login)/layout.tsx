@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import "../globals.css";
 
 export default function AuthLayout({
@@ -11,6 +12,7 @@ export default function AuthLayout({
         <main className="min-h-screen w-full bg-linear-page p-4">
           {children}
         </main>
+        <Toaster />
       </body>
     </html>
   );

@@ -6,15 +6,13 @@ import { Input } from "@/components/input";
 import { Label } from "@/components/label";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Loader2 } from "lucide-react";
-import { CheckIcon } from "@/components/icons";
+import { CheckIcon, CloseEye, Eye } from "@/components/icons";
 import { cn } from "@/lib/utils";
-
-interface Inputs {
-  email: string;
-  password: string;
-  terms: boolean;
-}
-
+import { SignUpFormData, signUpSchema } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { create } from "./actions";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 interface PasswordChecks {
   hasUpperCase: boolean;
   hasLowerCase: boolean;
@@ -28,8 +26,9 @@ export default function SignupForm() {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+  } = useForm<SignUpFormData>({ resolver: zodResolver(signUpSchema) });
 
   const [passwordChecks, setPasswordChecks] = useState<PasswordChecks>({
     hasUpperCase: false,
@@ -38,6 +37,8 @@ export default function SignupForm() {
     hasMinLength: false,
     hasSpecialChar: false,
   });
+  const [showPassword, setShowPassword] = useState<Boolean>(false);
+  const router = useRouter();
 
   const onPasswordChange = (password: string) => {
     setPasswordChecks({
@@ -55,13 +56,26 @@ export default function SignupForm() {
     onPasswordChange(password || "");
   }, [password]);
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const response = await new Promise((res) =>
+  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
+    const res = await create(data);
+
+    if (res && res.errors) {
+      toast({
+        title: "Something Went Wrong",
+        description: String(res.errors),
+      });
+    }
+    if (res && res.message) {
+      toast({
+        title: "Account Created",
+        description: String(res.message),
+      });
+
       setTimeout(() => {
-        res(data);
-      }, 2000),
-    );
-    console.log(response);
+        reset();
+        router.push("/login");
+      }, 2000);
+    }
   };
 
   return (
@@ -84,19 +98,45 @@ export default function SignupForm() {
                 name="email"
                 id="email"
                 autoComplete="email"
+                className={cn({
+                  "border-red-600 transition-colors duration-200": errors.email,
+                })}
               />
+              {errors.email && (
+                <p className="text-sm font-normal leading-5 text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input
-                {...register("password", { required: true })}
-                type="password"
-                placeholder="**********"
-                name="password"
-                id="password"
-                autoComplete="new-password"
-                onChange={(e) => onPasswordChange(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  {...register("password", { required: true })}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="**********"
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  onChange={(e) => onPasswordChange(e.target.value)}
+                  className={cn({
+                    "border-red-600 transition-colors duration-200":
+                      errors.password,
+                  })}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <CloseEye /> : <Eye />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm font-normal leading-5 text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <PasswordControl passwordChecks={passwordChecks} />
             <div className="flex items-center space-x-2">
@@ -106,6 +146,7 @@ export default function SignupForm() {
                 id="terms"
                 {...register("terms", { required: true })}
               />
+
               <Label
                 className="cursor-pointer text-sm font-normal leading-6 text-neutral-600"
                 htmlFor="terms"

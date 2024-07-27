@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { signUpSchema } from "@/lib/validations";
 import bcrypt from "bcrypt";
+import { redirect } from "next/navigation";
 
 export async function create(data: {
   email: string;
@@ -43,5 +44,9 @@ export async function create(data: {
     });
 
     return { message: "User created successfully" };
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
+
+  redirect("/login");
 }

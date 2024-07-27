@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { create } from "./actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+
 interface PasswordChecks {
   hasUpperCase: boolean;
   hasLowerCase: boolean;
@@ -37,6 +38,7 @@ export default function SignupForm() {
     hasMinLength: false,
     hasSpecialChar: false,
   });
+  const [passwordEntered, setPasswordEntered] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<Boolean>(false);
   const router = useRouter();
 
@@ -49,6 +51,11 @@ export default function SignupForm() {
       hasSpecialChar: /[!@#$%^&*]/.test(password),
     });
   };
+
+  useEffect(() => {
+    const subscription = watch((value) => setPasswordEntered(!!value.password));
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const password = watch("password");
 
@@ -118,19 +125,20 @@ export default function SignupForm() {
                   name="password"
                   id="password"
                   autoComplete="new-password"
-                  onChange={(e) => onPasswordChange(e.target.value)}
                   className={cn({
                     "border-red-600 transition-colors duration-200":
                       errors.password,
                   })}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <CloseEye /> : <Eye />}
-                </button>
+                {passwordEntered && (
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <CloseEye /> : <Eye />}
+                  </button>
+                )}
               </div>
               {errors.password && (
                 <p className="text-sm font-normal leading-5 text-red-600">
@@ -169,7 +177,7 @@ export default function SignupForm() {
 
         <Link
           className="text-sm font-medium leading-5 text-neutral-900"
-          href={"/login"}
+          href={"/sign-in"}
         >
           Already have an account?{" "}
           <span className="text-indigo-700">Sign in</span>

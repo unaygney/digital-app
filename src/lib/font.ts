@@ -1,3 +1,2 @@
-import { Inter } from "next/font/google";
-
-export const mainFont = Inter({ subsets: ["latin"] });
+import { Noto_Sans } from "next/font/google";
+export const mainFont = Noto_Sans({ subsets: ["latin"] });

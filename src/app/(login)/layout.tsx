@@ -13,7 +13,7 @@ export default function LoginLayout({
       <body
         className={cn(
           "min-h-screen w-full scroll-smooth antialiased",
-          mainFont,
+          mainFont.className,
         )}
       >
         <main className="h-full w-full bg-linear-page p-4">{children}</main>

@@ -13,7 +13,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen scroll-smooth font-sans antialiased",
-          mainFont,
+          mainFont.className,
         )}
       >
         {children}

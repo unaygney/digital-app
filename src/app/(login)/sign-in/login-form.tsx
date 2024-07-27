@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Input } from "@/components/input";
-import { Label } from "@/components/label";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { CloseEye, Eye } from "@/components/icons";

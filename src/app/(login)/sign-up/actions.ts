@@ -48,5 +48,5 @@ export async function create(data: {
     console.log(e);
   }
 
-  redirect("/login");
+  redirect("/sign-in");
 }

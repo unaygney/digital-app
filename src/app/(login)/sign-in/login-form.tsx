@@ -35,23 +35,23 @@ export default function LoginForm() {
   const onSubmit: SubmitHandler<SignInFormData> = async (data) => {
     const res = await login(data);
 
-    // if (res && res.errors) {
-    //   toast({
-    //     title: "Something Went Wrong",
-    //     description: String(res.errors),
-    //   });
-    // }
-    // if (res && res.message) {
-    //   toast({
-    //     title: "Account Created",
-    //     description: String(res.message),
-    //   });
+    if (res && res.errors) {
+      toast({
+        title: "Something Went Wrong",
+        description: String(res.errors),
+      });
+    }
+    if (res && res.message) {
+      toast({
+        title: "Account Created",
+        description: String(res.message),
+      });
 
-    //   setTimeout(() => {
-    //     reset();
-    //     router.push("/login");
-    //   }, 2000);
-    // }
+      setTimeout(() => {
+        reset();
+        router.push("/");
+      }, 2000);
+    }
   };
 
   return (

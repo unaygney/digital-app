@@ -14,8 +14,20 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
+  id           String  @id @default(uuid())
+  email        String  @unique
+  password     String
+  name         String?
+  profileImage String?
+  images       Image[]
+}
+
+model Image {
+  id          Int     @id @default(autoincrement())
+  originalUrl String
+  croppedUrl  String?
+  userId      String?
+  width       Int
+  height      Int
+  user        User?   @relation(fields: [userId], references: [id])
 }

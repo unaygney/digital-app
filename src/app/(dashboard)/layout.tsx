@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import "../globals.css";
 import { mainFont } from "@/lib/font";
 import { Toaster } from "@/components/ui/toaster";
+import Providers from "@/components/providers";
 
 export default function RootLayout({
   children,
@@ -16,7 +17,7 @@ export default function RootLayout({
           mainFont.className,
         )}
       >
-        {children}
+        <Providers>{children}</Providers>
         <Toaster />
       </body>
     </html>

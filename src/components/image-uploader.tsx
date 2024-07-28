@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
-import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { Cloud, Crop, Delete } from "./icons";
@@ -16,25 +14,23 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { useUploadThing } from "@/lib/uploadthing";
+import { getUserImages } from "@/app/(dashboard)/actions";
+import { useQuery, useQueryClient } from "react-query";
 
 export default function ImageUploader() {
-  const { toast } = useToast();
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [images, setImages] = useState<
-    { url: string; name: string; size: number }[]
-  >([]);
   const [isInnerDialogOpen, setIsInnerDialogOpen] = useState<boolean>(false);
-  const router = useRouter();
+
+  const queryClient = useQueryClient();
+
+  const email = "test@hotmail.com";
+  const { data } = useQuery(["images", email], () => getUserImages(email));
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
-      const newImages = uploadedFiles.map((file) => ({
-        url: file.url,
-        name: file.name,
-        size: file.size,
-      }));
       setIsInnerDialogOpen(true);
+      queryClient.invalidateQueries(["images", email]);
     },
     onUploadProgress: (p) => {
       setUploadProgress(p);
@@ -45,21 +41,9 @@ export default function ImageUploader() {
     const [file] = rejectedFiles;
 
     setIsDragOver(false);
-
-    // toast({
-    //   title: ${file.file.type} type is not supported.,
-    //   description: "Please choose a PNG, JPG, or JPEG image instead.",
-    //   variant: "destructive",
-    // });
   };
 
   const onDropAccepted = (acceptedFiles: File[]) => {
-    const newImages = acceptedFiles.map((file) => ({
-      url: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size,
-    }));
-    setImages((prevImages) => [...prevImages, ...newImages]);
     startUpload(acceptedFiles, {
       userId: "ab366c53-581f-45b8-9fda-229cf4b0539b",
     });
@@ -119,7 +103,7 @@ export default function ImageUploader() {
           </div>
           {isUploading && (
             <div className="flex flex-col gap-4 overflow-scroll bg-white">
-              {images.length > 0 &&
+              {/* {images.length > 0 &&
                 images.map((image, index) => (
                   <div key={index} className="flex gap-4">
                     <div className="relative h-20 w-20 overflow-hidden rounded-md">
@@ -147,15 +131,20 @@ export default function ImageUploader() {
                       </div>
                     </div>
                   </div>
-                ))}
+                ))} */}
             </div>
           )}
-          <div className="flex flex-col gap-4 overflow-scroll bg-white">
-            {images.length > 0 &&
-              images.map((image, index) => (
-                <div key={index} className="flex gap-4">
+          <div className="flex max-h-[252px] w-full flex-col gap-4 overflow-scroll bg-white">
+            {data &&
+              data.length > 0 &&
+              data.map((image, index) => (
+                <div key={index} className="flex w-full gap-4">
                   <div className="relative h-20 w-20 overflow-hidden rounded-md">
-                    <Image src={image.url} alt={`Uploaded ${index}`} fill />
+                    <Image
+                      src={image.originalUrl}
+                      alt={`Uploaded ${index}`}
+                      fill
+                    />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <div className="h-full w-full">
@@ -163,7 +152,7 @@ export default function ImageUploader() {
                         {image.name}
                       </h6>
                       <p className="text-xs font-normal leading-4 text-neutral-600">
-                        {(image.size / 1024).toFixed(2)} kb
+                        {(image.size! / 1024).toFixed(2)} kb
                       </p>
                     </div>
                     <div className="mt-auto flex items-center gap-1.5">

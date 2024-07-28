@@ -18,14 +18,16 @@ export const ourFileRouter = {
       const res = await fetch(file.url);
       const buffer = await res.arrayBuffer();
       const imgMetadata = await sharp(Buffer.from(buffer)).metadata();
-      const { width, height } = imgMetadata;
+      const { width, height, size } = imgMetadata;
 
       await db.image.create({
         data: {
+          name: file.name,
           originalUrl: file.url,
           userId,
           width: width || 0,
           height: height || 0,
+          size: size || 0,
         },
       });
     }),

@@ -24,10 +24,12 @@ model User {
 
 model Image {
   id          Int     @id @default(autoincrement())
+  name        String?
   originalUrl String
   croppedUrl  String?
   userId      String?
   width       Int
   height      Int
+  size        Float?
   user        User?   @relation(fields: [userId], references: [id])
 }

@@ -81,3 +81,37 @@ export function Cloud(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+export function Crop(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M11.0834 12.4723V13.8612H4.83344C4.44991 13.8612 4.139 13.5503 4.139 13.1668V5.52789H2.05566V4.139H4.139V2.05566H5.52789V12.4723H11.0834ZM12.4723 15.9446V5.52789H6.91678V4.139H13.1668C13.5503 4.139 13.8612 4.44991 13.8612 4.83344V12.4723H15.9446V13.8612H13.8612V15.9446H12.4723Z"
+        fill="#525252"
+      />
+    </svg>
+  );
+}
+export function Delete(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M14.5557 5.52789V14.5557C14.5557 15.3227 13.9339 15.9446 13.1668 15.9446H4.83344C4.06638 15.9446 3.44455 15.3227 3.44455 14.5557V5.52789H2.05566V4.139H15.9446V5.52789H14.5557ZM4.83344 5.52789V14.5557H13.1668V5.52789H4.83344ZM8.30566 6.91678H9.69455V8.30566H8.30566V6.91678ZM8.30566 9.00011H9.69455V10.389H8.30566V9.00011ZM8.30566 11.0834H9.69455V12.4723H8.30566V11.0834ZM5.52789 2.05566H12.4723V3.44455H5.52789V2.05566Z"
+        fill="#525252"
+      />
+    </svg>
+  );
+}

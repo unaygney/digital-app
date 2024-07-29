@@ -9,12 +9,18 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB" } })
     .input(z.object({ userId: z.string().uuid() }))
     .middleware(async ({ input }) => {
+      const userImagesCount = await db.image.count({
+        where: { userId: input.userId },
+      });
+
+      if (userImagesCount >= 5) {
+        throw new Error("You can only upload up to 5 images.");
+      }
       return { input };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       const { userId } = metadata.input;
 
-      // Dosyanın metadata bilgisini alıyoruz
       const res = await fetch(file.url);
       const buffer = await res.arrayBuffer();
       const imgMetadata = await sharp(Buffer.from(buffer)).metadata();

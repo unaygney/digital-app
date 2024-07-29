@@ -115,3 +115,20 @@ export function Delete(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+export function Check(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M7.61133 11.2022L13.9949 4.8186L14.977 5.80069L7.61133 13.1664L3.19189 8.74699L4.17398 7.76491L7.61133 11.2022Z"
+        fill="#15803D"
+      />
+    </svg>
+  );
+}

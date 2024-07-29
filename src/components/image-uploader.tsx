@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Dropzone, { FileRejection } from "react-dropzone";
 import { cn } from "@/lib/utils";
 import { Progress } from "./ui/progress";
-import { Cloud, Crop, Delete } from "./icons";
+import { Check, Cloud, Crop, Delete } from "./icons";
 import {
   Dialog,
   DialogContent,
@@ -43,7 +43,6 @@ export default function ImageUploader() {
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (uploadedFiles) => {
-      setIsInnerDialogOpen(true);
       queryClient.invalidateQueries(["images", email]);
       setUploadingImages((prev) =>
         prev.filter(
@@ -206,7 +205,10 @@ export default function ImageUploader() {
                           </p>
                         </div>
                         <div className="mt-auto flex items-center gap-1.5">
-                          <button className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setIsInnerDialogOpen(true)}
+                            className="flex items-center gap-1.5"
+                          >
                             <Crop />
                             <p className="text-sm">Crop image</p>
                           </button>
@@ -241,13 +243,24 @@ export default function ImageUploader() {
                         </h6>
                       </div>
                       <div className="mt-4 flex w-full items-center">
-                        <Progress
-                          className="h-[6px] flex-1 text-indigo-700"
-                          value={uploadProgress}
-                        />
-                        <p className="mt-2 text-sm font-medium leading-5 text-neutral-600">
-                          {uploadProgress}%
-                        </p>
+                        {uploadProgress < 100 ? (
+                          <div className="flex w-full items-center gap-2">
+                            <Progress
+                              className="h-[6px] flex-1 text-indigo-700"
+                              value={uploadProgress}
+                            />
+                            <p className="text-sm font-medium leading-5 text-neutral-600">
+                              {uploadProgress}%
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Check />
+                            <p className="text-xs font-medium leading-4 text-green-700">
+                              Upload Success
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <button className="absolute right-0 top-0">

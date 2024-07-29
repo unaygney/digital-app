@@ -5,7 +5,6 @@ export default function Home() {
   return (
     <div className="py-20">
       <ImageUploader />
-      <Progress value={50} className="h-[6px] text-indigo-700" />
     </div>
   );
 }

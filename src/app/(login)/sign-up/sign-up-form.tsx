@@ -69,13 +69,11 @@ export default function SignupForm() {
 
     if (res && res.errors) {
       toast({
-        title: "Something Went Wrong",
         description: String(res.errors),
       });
     }
     if (res && res.message) {
       toast({
-        title: "Account Created",
         description: String(res.message),
       });
 

@@ -147,7 +147,7 @@ export default function ImageUploader() {
                   {imagesData && imagesData.length >= 5 ? (
                     <div className="flex flex-col items-center py-4">
                       <h6 className="text-base font-semibold leading-6 text-red-600">
-                        You've reached the image limit
+                        You&apos;ve reached the image limit
                       </h6>
                       <p className="text-xs font-normal text-neutral-600">
                         You can only upload up to 5 images.

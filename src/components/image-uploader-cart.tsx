@@ -29,8 +29,8 @@ export default async function ImageUploaderCard() {
         <Image
           src="/card-bg-image.png"
           alt="card background image"
-          layout="fill"
           objectFit="cover"
+          fill
           placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}
         />
       </div>
@@ -47,7 +47,7 @@ export default async function ImageUploaderCard() {
                 <Image
                   src={profileImage.originalUrl}
                   alt="profile image"
-                  layout="fill"
+                  fill
                   objectFit="cover"
                   objectPosition={`-${profileImage.cropX}px -${profileImage.cropY}px`}
                 />
@@ -55,8 +55,8 @@ export default async function ImageUploaderCard() {
             ) : (
               <Image
                 src="/placeholder-profile.png"
+                fill
                 alt="profile image"
-                layout="fill"
                 objectFit="cover"
                 className="rounded-full"
                 placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}

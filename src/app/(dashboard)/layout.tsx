@@ -10,10 +10,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full w-full">
       <body
         className={cn(
-          "min-h-screen scroll-smooth font-sans antialiased",
+          "h-full w-full scroll-smooth font-sans antialiased",
           mainFont.className,
         )}
       >

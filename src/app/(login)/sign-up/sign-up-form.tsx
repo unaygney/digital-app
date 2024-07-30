@@ -79,7 +79,7 @@ export default function SignupForm() {
 
       setTimeout(() => {
         reset();
-        router.push("/login");
+        router.push("/sign-in");
       }, 2000);
     }
   };

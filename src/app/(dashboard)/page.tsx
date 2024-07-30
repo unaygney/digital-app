@@ -1,10 +1,9 @@
-import ImageUploader from "@/components/image-uploader";
-import { Progress } from "@/components/ui/progress";
+import ImageUploaderCard from "@/components/image-uploader-cart";
 
-export default function Home() {
+export default async function Home() {
   return (
-    <div className="py-20">
-      <ImageUploader />
+    <div className="flex h-full w-full items-center justify-center">
+      <ImageUploaderCard />
     </div>
   );
 }

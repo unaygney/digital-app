@@ -18,6 +18,12 @@ model User {
   email        String  @unique
   password     String
   name         String?
+  username     String? @unique
+  jobTitle     String?
+  workPlace    String?
+  pronouns     String?
+  country      String?
+  city         String?
   profileImage String?
   images       Image[]
 }
@@ -26,7 +32,10 @@ model Image {
   id          Int     @id @default(autoincrement())
   name        String?
   originalUrl String  @unique
-  croppedUrl  String?
+  cropX       Int?
+  cropY       Int?
+  cropWidth   Int?
+  cropHeight  Int?
   userId      String?
   width       Int
   height      Int

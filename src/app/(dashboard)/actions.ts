@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
+
 import { accountSettingsSchema } from "@/lib/validations";
 
 export const getUser = async () => {

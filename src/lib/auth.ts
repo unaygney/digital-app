@@ -1,5 +1,6 @@
+import "server-only";
 import { jwtVerify } from "jose";
-
+import { cookies } from "next/headers";
 export const getJwtSecretKey = () => {
   const secretKey = process.env.SECRET_KEY;
 
@@ -26,4 +27,13 @@ export const isAuthPages = (url: string) => {
   const AUTH_PAGES = ["/sign-in", "/sign-up"];
 
   return AUTH_PAGES.some((page) => page.startsWith(url));
+};
+export const getTokenAndVerify = async (): Promise<string> => {
+  const cookiesStore = cookies();
+  const token = cookiesStore.get("token")?.value ?? "";
+
+  const isValidToken = await verifyJwtToken(token);
+  if (!isValidToken || !isValidToken.email) throw new Error("Invalid User");
+
+  return isValidToken.email as string;
 };

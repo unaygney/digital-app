@@ -1,19 +1,25 @@
 "use server";
 
 import { db } from "@/db";
-import { verifyJwtToken } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { getTokenAndVerify } from "@/lib/auth";
 
-export const getTokenAndVerify = async (): Promise<string> => {
-  const cookiesStore = cookies();
-  const token = cookiesStore.get("token")?.value ?? "";
+export const getUser = async () => {
+  const email = await getTokenAndVerify();
 
-  const isValidToken = await verifyJwtToken(token);
-  if (!isValidToken || !isValidToken.email) throw new Error("Invalid User");
+  const user = await db.user.findUnique({
+    where: { email },
+    select: {
+      email: true,
+      firstName: true,
+      lastName: true,
+      profileImage: true,
+    },
+  });
 
-  return isValidToken.email as string;
+  if (!user) return { message: "User not found" };
+
+  return user;
 };
-
 export const getUserImages = async () => {
   const email = await getTokenAndVerify();
 

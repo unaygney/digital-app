@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
+import { accountSettingsSchema } from "@/lib/validations";
 
 export const getUser = async () => {
   const email = await getTokenAndVerify();
@@ -99,4 +100,41 @@ export const handleCroppedImage = async (
   });
 
   return { message: "Cropped image updated" };
+};
+export const uploadAccountSettings = async (data: {
+  firstName?: string;
+  lastName?: string;
+  email: string;
+  userName: string;
+}) => {
+  const email = await getTokenAndVerify();
+
+  let isValid = accountSettingsSchema.safeParse(data);
+  if (!isValid.success) {
+    const errors = isValid.error.flatten().fieldErrors;
+    const errorMessage = Object.values(errors).flat().join(", ");
+    return { message: errorMessage };
+  }
+
+  const { firstName, lastName, userName, email: userEmail } = data;
+
+  const user = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) return { message: "User not found" };
+
+  let formattedUsername = "@" + userName.toLowerCase().replace(/\s/g, "");
+
+  await db.user.update({
+    where: { email },
+    data: {
+      firstName,
+      lastName,
+      userName: formattedUsername,
+      email: userEmail,
+    },
+  });
+
+  return { message: "Account settings updated" };
 };

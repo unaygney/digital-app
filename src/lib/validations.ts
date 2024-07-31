@@ -20,6 +20,13 @@ export const signInSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
+export const accountSettingsSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters long"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters long"),
+  email: z.string().email(),
+  userName: z.string().min(2, "Username must be at least 2 characters long"),
+});
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
+export type AccountSettingsFormData = z.infer<typeof accountSettingsSchema>;

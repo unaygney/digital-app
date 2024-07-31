@@ -16,8 +16,6 @@ export default async function ImageUploaderCard() {
 
   if (!user) throw new Error("User not found");
 
-  console.log(user);
-
   const profileImage = user.images.find(
     (img) => img.originalUrl === user.profileImage,
   );

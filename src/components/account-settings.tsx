@@ -7,7 +7,6 @@ import {
   AccountSettingsFormData,
   accountSettingsSchema,
 } from "@/lib/validations";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import {
@@ -21,10 +20,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "react-query";
-import { getUser } from "@/app/(dashboard)/actions";
+import { getUser, uploadAccountSettings } from "@/app/(dashboard)/actions";
+import { useToast } from "./ui/use-toast";
 
 export default function AccountSettings({ id }: { id: string }) {
   const [defaultValues, setDefaultValues] = React.useState<any>(null);
+  const { toast } = useToast();
   const { data, error, isLoading } = useQuery({
     queryKey: ["user", id],
     queryFn: async () => await getUser(),
@@ -55,8 +56,12 @@ export default function AccountSettings({ id }: { id: string }) {
     }
   }, [defaultValues]);
 
-  function onSubmit(values: AccountSettingsFormData) {
-    console.log(values);
+  async function onSubmit(values: AccountSettingsFormData) {
+    const res = await uploadAccountSettings(values);
+
+    toast({
+      description: res.message,
+    });
   }
 
   return (

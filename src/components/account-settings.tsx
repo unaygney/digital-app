@@ -54,7 +54,7 @@ export default function AccountSettings({ id }: { id: string }) {
         setValue(key as keyof AccountSettingsFormData, defaultValues[key]);
       }
     }
-  }, [defaultValues]);
+  }, [defaultValues, setValue]);
 
   async function onSubmit(values: AccountSettingsFormData) {
     const res = await uploadAccountSettings(values);

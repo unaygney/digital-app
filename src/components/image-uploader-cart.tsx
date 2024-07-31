@@ -1,4 +1,4 @@
-import { getTokenAndVerify } from "@/app/(dashboard)/actions";
+import { getTokenAndVerify } from "@/lib/auth";
 import React from "react";
 import { db } from "@/db";
 import Image from "next/image";
@@ -15,6 +15,8 @@ export default async function ImageUploaderCard() {
   });
 
   if (!user) throw new Error("User not found");
+
+  console.log(user);
 
   const profileImage = user.images.find(
     (img) => img.originalUrl === user.profileImage,
@@ -67,14 +69,14 @@ export default async function ImageUploaderCard() {
         </div>
 
         <h2 className="text-2xl font-semibold leading-8 text-neutral-900 md:text-3xl">
-          {user.name}
+          {`${user.firstName} ${user.lastName}`}
         </h2>
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-3 text-neutral-900">
-            {user.username && (
+            {user?.userName && (
               <p className="text-xl font-normal leading-7 text-neutral-900">
-                {user.username}
+                {user.userName}
               </p>
             )}
             <p className="text-xl font-normal leading-7 text-neutral-600">•</p>

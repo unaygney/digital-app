@@ -14,20 +14,45 @@ datasource db {
 }
 
 model User {
-  id           String  @id @default(uuid())
-  email        String  @unique
-  password     String
-  firstName    String?
-  lastName     String?
-  userName     String? @unique
-  jobTitle     String?
-  workPlace    String?
-  pronouns     String?
-  country      String?
-  city         String?
-  profileImage String?
-  images       Image[]
-  preferences  Json?   @default("{}")
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  password           String
+  firstName          String?
+  lastName           String?
+  userName           String?             @unique
+  jobTitle           String?
+  workPlace          String?
+  pronouns           String?
+  country            String?
+  city               String?
+  profileImage       String?
+  images             Image[]
+  preferences        Json?               @default("{}")
+  billingInformation BillingInformation?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BillingInformation {
+  id         Int     @id @default(autoincrement())
+  userId     String  @unique
+  cardNumber String
+  cardHolder String
+  expiration String
+  cvv        String
+  email      String
+  country    String
+  address    String
+  address2   String?
+  city       String
+  state      String
+  zip        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Image {

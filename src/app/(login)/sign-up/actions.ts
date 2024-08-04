@@ -35,11 +35,41 @@ export async function create(data: {
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(data.password, salt);
 
+    // Set up defaultPreferences
+    const defaultPreferences = {
+      comments: {
+        email: false,
+        push: false,
+        sms: false,
+      },
+      features: {
+        email: false,
+        push: false,
+        sms: false,
+      },
+      friend_requests: {
+        email: false,
+        push: false,
+        sms: false,
+      },
+      friend_updates: {
+        email: false,
+        push: false,
+        sms: false,
+      },
+      marketing: {
+        email: false,
+        push: false,
+        sms: false,
+      },
+    };
+
     // Create user
     let newUser = await db.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
+        preferences: defaultPreferences,
       },
     });
 

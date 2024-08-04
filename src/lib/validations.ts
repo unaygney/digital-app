@@ -58,6 +58,37 @@ export const passwordSettingsSchema = z
     }
   });
 
+export const notificationsSettingsSchema = z.object({
+  comments: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    sms: z.boolean(),
+  }),
+  features: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    sms: z.boolean(),
+  }),
+  friend_requests: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    sms: z.boolean(),
+  }),
+  friend_updates: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    sms: z.boolean(),
+  }),
+  marketing: z.object({
+    email: z.boolean(),
+    push: z.boolean(),
+    sms: z.boolean(),
+  }),
+});
+
+export type NotificationsSettingsFormData = z.infer<
+  typeof notificationsSettingsSchema
+>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type AccountSettingsFormData = z.infer<typeof accountSettingsSchema>;

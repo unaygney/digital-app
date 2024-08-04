@@ -27,6 +27,7 @@ model User {
   city         String?
   profileImage String?
   images       Image[]
+  preferences  Json?   @default("{}")
 }
 
 model Image {

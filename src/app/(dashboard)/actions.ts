@@ -7,8 +7,15 @@ import {
   accountSettingsSchema,
   NotificationsSettingsFormData,
 } from "@/lib/validations";
+import { cookies } from "next/headers";
+
 type UserPreferences = NotificationsSettingsFormData;
 
+export const deleteToken = async () => {
+  const cookiesStore = cookies();
+
+  cookiesStore.set("token", "", { expires: new Date(0) });
+};
 export const getUser = async () => {
   const email = await getTokenAndVerify();
 

@@ -3,6 +3,7 @@ import ImageUploaderCard from "@/components/image-uploader-cart";
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
 import PasswordSettings from "@/components/password-settings";
+import NotificationsSettings from "@/components/notifications-settings";
 export default async function Home() {
   const email = await getTokenAndVerify();
 
@@ -17,8 +18,9 @@ export default async function Home() {
   return (
     <div className="flex h-full w-full items-center justify-center">
       {/* <AccountSettings id={user?.id} /> */}
-      <PasswordSettings id={user?.id} />
+      {/* <PasswordSettings id={user?.id} /> */}
       {/* <ImageUploaderCard /> */}
+      <NotificationsSettings id={user?.id} />
     </div>
   );
 }

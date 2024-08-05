@@ -58,7 +58,7 @@ export default function BillingInformation() {
             name="cardNumber"
             render={({ field }) => (
               <FormItem className="relative">
-                <FormLabel>Current Password</FormLabel>
+                <FormLabel>Card Information</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter your current password" {...field} />
                 </FormControl>

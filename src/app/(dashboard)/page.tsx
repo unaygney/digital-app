@@ -13,7 +13,7 @@ export default async function Home() {
   if (!user) deleteToken();
 
   return (
-    <div className="flex h-full w-full p-24">
+    <div className="flex h-full w-full p-4">
       <BillingInformation />
     </div>
   );

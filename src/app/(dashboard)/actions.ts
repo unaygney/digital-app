@@ -5,6 +5,8 @@ import { getTokenAndVerify } from "@/lib/auth";
 import bcrypt from "bcrypt";
 import {
   accountSettingsSchema,
+  BillingInformationFormData,
+  billingInformationSchema,
   NotificationsSettingsFormData,
 } from "@/lib/validations";
 import { cookies } from "next/headers";
@@ -243,4 +245,56 @@ export const updatePreferences = async (
   });
 
   return { message: "Preferences updated" };
+};
+export const createBillingInformation = async (
+  data: BillingInformationFormData,
+) => {
+  const email = await getTokenAndVerify();
+
+  const isValid = billingInformationSchema.safeParse(data);
+
+  if (!isValid.success) {
+    const errors = isValid.error.flatten().fieldErrors;
+    const errorMessage = Object.values(errors).flat().join(", ");
+    return { message: errorMessage };
+  }
+
+  const {
+    cardNumber,
+    cardHolder,
+    email: billingEmail,
+    cvv,
+    address,
+    city,
+    zip,
+    country,
+    expiration,
+    state,
+    address2,
+  } = data;
+
+  const user = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) return { message: "User not found" };
+
+  await db.billingInformation.create({
+    data: {
+      cardNumber,
+      cardHolder,
+      email: billingEmail,
+      cvv,
+      address,
+      city,
+      zip,
+      country,
+      expiration,
+      state,
+      address2,
+      user: { connect: { id: user.id } },
+    },
+  });
+
+  return { message: "Billing information updated" };
 };

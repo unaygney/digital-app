@@ -14,12 +14,12 @@ datasource db {
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  email              String              @unique
+  id                 String               @id @default(uuid())
+  email              String               @unique
   password           String
   firstName          String?
   lastName           String?
-  userName           String?             @unique
+  userName           String?              @unique
   jobTitle           String?
   workPlace          String?
   pronouns           String?
@@ -27,8 +27,8 @@ model User {
   city               String?
   profileImage       String?
   images             Image[]
-  preferences        Json?               @default("{}")
-  billingInformation BillingInformation?
+  preferences        Json?                @default("{}")
+  billingInformation BillingInformation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,7 +36,7 @@ model User {
 
 model BillingInformation {
   id         Int     @id @default(autoincrement())
-  userId     String  @unique
+  userId     String
   cardNumber String
   cardHolder String
   expiration String

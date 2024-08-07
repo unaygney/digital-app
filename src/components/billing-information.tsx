@@ -11,15 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
+import { useToast } from "./ui/use-toast";
 import { Loader2 } from "lucide-react";
 import {
   BillingInformationFormData,
   billingInformationSchema,
 } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createBillingInformation } from "@/app/(dashboard)/actions";
 
 export default function BillingInformation() {
+  const { toast } = useToast();
   const form = useForm<BillingInformationFormData>({
     resolver: zodResolver(billingInformationSchema),
   });
@@ -31,7 +33,13 @@ export default function BillingInformation() {
   } = form;
 
   async function onSubmit(values: BillingInformationFormData) {
-    console.log(values);
+    const res = await createBillingInformation(values);
+
+    toast({
+      description: res.message,
+    });
+
+    reset(values);
   }
 
   return (

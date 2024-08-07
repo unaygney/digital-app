@@ -28,6 +28,7 @@ export const getUser = async () => {
       firstName: true,
       lastName: true,
       profileImage: true,
+      userName: true,
     },
   });
 
@@ -292,9 +293,9 @@ export const createBillingInformation = async (
       expiration,
       state,
       address2,
-      user: { connect: { id: user.id } },
+      userId: user.id,
     },
   });
 
-  return { message: "Billing information updated" };
+  return { message: "Billing information created" };
 };

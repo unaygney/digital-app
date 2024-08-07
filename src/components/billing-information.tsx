@@ -45,7 +45,7 @@ export default function BillingInformation() {
   return (
     <section
       id="account-settings"
-      className="flex w-full max-w-[1216px] flex-col gap-8 p-5"
+      className="flex w-full max-w-[1216px] flex-col gap-8"
     >
       <div className="flex flex-col gap-2">
         <h3 className="text-xl font-semibold leading-7 text-neutral-900">

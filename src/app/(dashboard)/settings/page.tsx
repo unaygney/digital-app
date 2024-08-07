@@ -1,9 +1,10 @@
+import AccountSettings from "@/components/account-settings";
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
+import React from "react";
+import { deleteToken } from "../actions";
 
-import { deleteToken } from "./actions";
-
-export default async function Home() {
+export default async function AccountPage() {
   const email = await getTokenAndVerify();
 
   const user = await db.user.findUnique({
@@ -12,9 +13,5 @@ export default async function Home() {
 
   if (!user) deleteToken();
 
-  return (
-    <div className="flex h-full w-full p-4">
-      <p>test</p>
-    </div>
-  );
+  return <AccountSettings id={user?.id!} />;
 }

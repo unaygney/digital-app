@@ -23,7 +23,7 @@ import { useToast } from "./ui/use-toast";
 
 type Preferences = NotificationsSettingsFormData;
 
-export default function NotificationsSettings({ id }: { id: string }) {
+export default function NotificationsSettings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -77,7 +77,7 @@ export default function NotificationsSettings({ id }: { id: string }) {
   return (
     <section
       id="account-settings"
-      className="flex w-full max-w-[1216px] flex-col gap-8 p-5"
+      className="flex w-full max-w-[1216px] flex-col gap-8"
     >
       <div className="flex flex-col gap-2">
         <h3 className="text-xl font-semibold leading-7 text-neutral-900">

@@ -30,7 +30,7 @@ interface PasswordChecks {
   hasSpecialChar: boolean;
 }
 
-export default function PasswordSettings({ id }: { id: string }) {
+export default function PasswordSettings() {
   const [passwordChecks, setPasswordChecks] = useState<PasswordChecks>({
     hasUpperCase: false,
     hasLowerCase: false,
@@ -95,12 +95,10 @@ export default function PasswordSettings({ id }: { id: string }) {
     setIsButtonDisabled(!currentPass || !newPass || !confirmPass);
   }, [currentPass, newPass, confirmPass]);
 
-  console.log(isSubmitting);
-
   return (
     <section
       id="account-settings"
-      className="flex w-full max-w-[1216px] flex-col gap-8 p-5"
+      className="flex w-full max-w-[1216px] flex-col gap-8"
     >
       <div className="flex flex-col gap-2">
         <h3 className="text-xl font-semibold leading-7 text-neutral-900">

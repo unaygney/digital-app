@@ -22,11 +22,12 @@ import {
   getUserImages,
   makeProfileImage,
   handleCroppedImage,
-} from "@/app/(dashboard)/actions";
+} from "@/app/(dashboard)/settings/actions";
 import { useQuery, useQueryClient } from "react-query";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function ImageUploader({ id }: { id: string }) {
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
@@ -36,6 +37,7 @@ export default function ImageUploader({ id }: { id: string }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const router = useRouter();
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -90,6 +92,7 @@ export default function ImageUploader({ id }: { id: string }) {
       title: "Update",
       description: response.message,
     });
+    setTimeout(() => location.reload(), 2000);
   };
 
   const handleDeleteImage = async (url: string) => {
@@ -101,6 +104,8 @@ export default function ImageUploader({ id }: { id: string }) {
     toast({
       description: response.message,
     });
+
+    setTimeout(() => location.reload(), 2000);
   };
 
   const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
@@ -116,6 +121,8 @@ export default function ImageUploader({ id }: { id: string }) {
       toast({
         description: res.message,
       });
+
+      setTimeout(() => location.reload(), 2000);
     }
   };
 

@@ -17,14 +17,32 @@ import { Brifcase } from "./icons";
 import { planSchema } from "@/lib/validations";
 import { Loader2 } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { updateBillingPlan } from "@/app/(dashboard)/settings/plan/actions";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/utils";
+export interface Subscribe {
+  id: number;
+  userId: string;
+  planType: "basic" | "starter" | "pro";
+  previousPlan: "basic" | "starter" | "pro" | null;
+  pricing: number;
+  expiryDate: null | Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default function BillingPlan() {
-  const [selectedPlan, setSelectedPlan] = useState<string | null>("starter");
+export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(
+    subscribe?.planType || "starter",
+  );
 
   const form = useForm<z.infer<typeof planSchema>>({
     resolver: zodResolver(planSchema),
     defaultValues: {
-      plan: "starter",
+      plan: subscribe?.planType || "starter",
     },
   });
 
@@ -32,8 +50,14 @@ export default function BillingPlan() {
     formState: { isSubmitting },
   } = form;
 
-  function onSubmit(values: z.infer<typeof planSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof planSchema>) {
+    const res = await updateBillingPlan(values);
+
+    toast({
+      description: res.message,
+    });
+
+    router.refresh();
   }
 
   return (
@@ -185,13 +209,15 @@ export default function BillingPlan() {
           </form>
         </Form>
         <div className="flex flex-col gap-3 self-start rounded-lg border border-neutral-200 bg-white p-4 lg:w-[280px]">
-          <h3 className="text-lg">Your current subscription</h3>
+          <h3 className="mb-3 text-lg font-semibold leading-7 text-neutral-900">
+            Your current subscription
+          </h3>
           <div className="flex items-center justify-between">
             <h6 className="text-sm font-normal leading-5 text-neutral-400">
               Plan Type
             </h6>
-            <p className="text-sm font-medium leading-5 text-neutral-900">
-              Starter plan
+            <p className="text-sm font-medium capitalize leading-5 text-neutral-900">
+              {subscribe?.planType} Plan
             </p>
           </div>
           <hr />
@@ -200,9 +226,23 @@ export default function BillingPlan() {
               Pricing
             </h6>
             <p className="text-sm font-medium leading-5 text-neutral-900">
-              Starter plan
+              ${subscribe?.pricing} per month
             </p>
           </div>
+
+          {subscribe?.expiryDate && (
+            <>
+              <hr />
+              <div className="flex items-center justify-between">
+                <h6 className="text-sm font-normal leading-5 text-neutral-400">
+                  Next Billing
+                </h6>
+                <p className="text-sm font-medium leading-5 text-neutral-900">
+                  {formatDate(subscribe?.expiryDate)}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>

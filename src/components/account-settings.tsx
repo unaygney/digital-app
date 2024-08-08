@@ -20,12 +20,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "react-query";
-import { getUser, uploadAccountSettings } from "@/app/(dashboard)/actions";
+import {
+  getUser,
+  uploadAccountSettings,
+} from "@/app/(dashboard)/settings/actions";
 import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function AccountSettings({ id }: { id: string }) {
   const [defaultValues, setDefaultValues] = React.useState<any>(null);
   const { toast } = useToast();
+  const router = useRouter();
   const { data, error, isLoading } = useQuery({
     queryKey: ["user", id],
     queryFn: async () => await getUser(),
@@ -63,6 +68,7 @@ export default function AccountSettings({ id }: { id: string }) {
     toast({
       description: res.message,
     });
+    router.refresh();
   }
 
   return (

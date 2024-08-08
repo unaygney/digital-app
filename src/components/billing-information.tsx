@@ -18,9 +18,11 @@ import {
   billingInformationSchema,
 } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createBillingInformation } from "@/app/(dashboard)/actions";
+import { createBillingInformation } from "@/app/(dashboard)/settings/billing/actions";
+import { useRouter } from "next/navigation";
 
 export default function BillingInformation() {
+  const router = useRouter();
   const { toast } = useToast();
   const form = useForm<BillingInformationFormData>({
     resolver: zodResolver(billingInformationSchema),
@@ -38,8 +40,7 @@ export default function BillingInformation() {
     toast({
       description: res.message,
     });
-
-    reset(values);
+    router.refresh();
   }
 
   return (

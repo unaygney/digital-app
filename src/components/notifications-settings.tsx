@@ -1,6 +1,9 @@
 "use client";
 
-import { getPreferences, updatePreferences } from "@/app/(dashboard)/actions";
+import {
+  getPreferences,
+  updatePreferences,
+} from "@/app/(dashboard)/settings/notifications/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";

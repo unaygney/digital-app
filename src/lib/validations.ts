@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const PLANS = ["starter", "basic", "pro"] as const;
+
 export const signUpSchema = z.object({
   email: z.string().email(),
   password: z
@@ -115,6 +117,10 @@ export const billingInformationSchema = z.object({
   country: z.string().min(1, "Country is required"),
 });
 
+export const planSchema = z.object({
+  plan: z.enum(PLANS),
+});
+
 // types of schemes
 export type NotificationsSettingsFormData = z.infer<
   typeof notificationsSettingsSchema
@@ -126,3 +132,4 @@ export type PasswordSettingsFormData = z.infer<typeof passwordSettingsSchema>;
 export type BillingInformationFormData = z.infer<
   typeof billingInformationSchema
 >;
+export type PlanFormData = z.infer<typeof planSchema>;

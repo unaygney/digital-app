@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "./ui/use-toast";
-import { CheckIcon, CloseEye, Eye } from "./icons"; // Assuming you have an OpenEye icon
+import { CheckIcon, CloseEye, Eye } from "./icons";
 import { cn } from "@/lib/utils";
-import { changePassword } from "@/app/(dashboard)/actions";
+import { changePassword } from "@/app/(dashboard)/settings/security/actions";
 import { Loader2 } from "lucide-react";
 
 interface PasswordChecks {

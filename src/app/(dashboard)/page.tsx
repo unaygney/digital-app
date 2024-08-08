@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
 
-import { deleteToken } from "./actions";
+import { deleteToken } from "./settings/actions";
 
 export default async function Home() {
   const email = await getTokenAndVerify();

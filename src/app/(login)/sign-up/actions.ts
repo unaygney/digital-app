@@ -72,7 +72,9 @@ export async function create(data: {
         preferences: defaultPreferences,
         subscription: {
           create: {
-            planType: "basic",
+            planType: "starter",
+            previousPlan: null,
+            expiryDate: null,
             pricing: 0,
           },
         },

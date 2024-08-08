@@ -70,6 +70,12 @@ export async function create(data: {
         email: data.email,
         password: hashedPassword,
         preferences: defaultPreferences,
+        subscription: {
+          create: {
+            planType: "basic",
+            pricing: 0,
+          },
+        },
       },
     });
 

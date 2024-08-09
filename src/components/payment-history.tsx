@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Table,
@@ -11,26 +12,22 @@ import { buttonVariants } from "./ui/button";
 import { Badge } from "./ui/badge";
 
 import { BankCard } from "./icons";
+import { useQuery, useQueryClient } from "react-query";
+import { getPayments } from "@/app/(dashboard)/settings/billing/actions";
 
-type Payment = {
-  amount: number;
-  plan: string;
-  status: string;
-  invoice_url: string;
-  created_at: string;
-};
-
-export default async function PaymentHistory() {
-  const res = await fetch(
-    "https://www.greatfrontend.com/api/projects/challenges/account/billing/history",
+export default function PaymentHistory() {
+  const queryClient = useQueryClient();
+  const { data: payments, isLoading } = useQuery(
+    "payments",
+    async () => await getPayments(),
   );
-  const data = await res.json();
-  const payments: Payment[] = data.data;
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <section
       id="account-settings"
-      className="flex w-full max-w-[1216px] flex-col gap-8 p-5"
+      className="flex w-full max-w-[1216px] flex-col gap-8"
     >
       <div className="flex flex-col gap-2">
         <h3 className="text-xl font-semibold leading-7 text-neutral-900">
@@ -42,7 +39,7 @@ export default async function PaymentHistory() {
         </p>
       </div>
 
-      {payments.length === 0 ? (
+      {payments?.length === 0 ? (
         <div className="flex flex-1 items-center justify-center">
           <div className="flex w-full max-w-[320px] flex-col items-center gap-2 p-6 text-center">
             <span className="mt-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-white shadow">
@@ -52,8 +49,8 @@ export default async function PaymentHistory() {
               No payment history available
             </h3>
             <p className="text-base font-normal leading-6 text-neutral-900">
-              Once you start making transactions, your payment details
-              will appear here.
+              Once you start making transactions, your payment details will
+              appear here.
             </p>
           </div>
         </div>
@@ -68,7 +65,7 @@ export default async function PaymentHistory() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payments.map(
+            {payments?.map(
               ({ invoice_url, status, amount, plan, created_at }, idx) => (
                 <TableRow key={idx}>
                   <TableCell className="text-sm font-medium text-neutral-900">

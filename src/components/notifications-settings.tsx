@@ -56,7 +56,6 @@ export default function NotificationsSettings() {
   } = form;
 
   async function onSubmit(data: NotificationsSettingsFormData) {
-    console.log(data);
     const res = await updatePreferences(data);
     if (res) {
       queryClient.invalidateQueries("notifications");

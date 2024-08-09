@@ -21,6 +21,11 @@ import { updateBillingPlan } from "@/app/(dashboard)/settings/plan/actions";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/utils";
+import { PaymentModal } from "./payment-modal";
+import NoBillingModal from "./no-billing-modal";
+import { useCustomNavigationGuard } from "@/hooks/use-unsaved-changes";
+import { LeaveAlertDialog } from "./leave-modal";
+import PaymentHistory from "./payment-history";
 export interface Subscribe {
   id: number;
   userId: string;
@@ -35,6 +40,8 @@ export interface Subscribe {
 export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
   const { toast } = useToast();
   const router = useRouter();
+  const [noBilling, setNoBilling] = useState<boolean>(false);
+  const [leaveState, setLeaveState] = useState<boolean>(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(
     subscribe?.planType || "starter",
   );
@@ -47,8 +54,11 @@ export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
   });
 
   const {
-    formState: { isSubmitting },
+    reset,
+    formState: { isSubmitting, isDirty },
   } = form;
+
+  const { pendingUrl } = useCustomNavigationGuard(isDirty, setLeaveState);
 
   async function onSubmit(values: z.infer<typeof planSchema>) {
     const res = await updateBillingPlan(values);
@@ -57,8 +67,21 @@ export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
       description: res.message,
     });
 
+    if (res.message === "Billing information not found") {
+      setNoBilling(true);
+    }
     router.refresh();
+    reset(values);
   }
+
+  const handleConfirmLeave = () => {
+    setLeaveState(false);
+    window.location.href = pendingUrl as string;
+  };
+
+  const handleCancelLeave = () => {
+    setLeaveState(false);
+  };
 
   return (
     <section id="account-settings" className="flex w-full flex-col gap-8">
@@ -203,7 +226,6 @@ export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
               disabled={isSubmitting}
               className="ml-auto self-start"
             >
-              {isSubmitting && <Loader2 className="animate-spin" />}
               Save changes
             </Button>
           </form>
@@ -245,6 +267,15 @@ export default function BillingPlan({ subscribe }: { subscribe: Subscribe }) {
           )}
         </div>
       </div>
+
+      <NoBillingModal open={noBilling} setOpen={setNoBilling} />
+      <LeaveAlertDialog
+        leaveState={leaveState}
+        onCancel={handleCancelLeave}
+        onConfirm={handleConfirmLeave}
+      />
+
+      <PaymentModal open={isSubmitting} />
     </section>
   );
 }

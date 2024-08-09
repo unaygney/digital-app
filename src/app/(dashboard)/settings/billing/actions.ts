@@ -64,3 +64,19 @@ export const createBillingInformation = async (
 
   return { message: "Billing information created" };
 };
+
+type Payment = {
+  amount: number;
+  plan: string;
+  status: string;
+  invoice_url: string;
+  created_at: string;
+};
+
+export const getPayments = async () => {
+  const res = await fetch(
+    "https://www.greatfrontend.com/api/projects/challenges/account/billing/history",
+  );
+  const data = await res.json();
+  return data.data as Payment[];
+};

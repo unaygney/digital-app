@@ -23,8 +23,12 @@ export const updateBillingPlan = async (data: PlanFormData) => {
 
   const user = await db.user.findUnique({
     where: { email },
-    include: { subscription: true },
+    include: { subscription: true, billingInformation: true },
   });
+
+  if (!user?.billingInformation) {
+    return { message: "Billing information not found" };
+  }
 
   if (!user) {
     return { message: "User not found" };

@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   const hasVerifiedToken = token && (await verifyJwtToken(token));
   const isAuthpageRequested = isAuthPages(nextUrl.pathname);
 
-  if (nextUrl.pathname === "/") {
+  if (nextUrl.pathname === "/" || nextUrl.pathname.startsWith("/settings")) {
     if (hasVerifiedToken) {
       const response = NextResponse.next();
       return response;

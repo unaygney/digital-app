@@ -37,12 +37,14 @@ export default function BillingInformation() {
   const {
     watch,
     reset,
+    setValue,
     formState: { isSubmitting, isDirty },
   } = form;
 
   const { pendingUrl } = useCustomNavigationGuard(isDirty, setLeaveState);
 
   async function onSubmit(values: BillingInformationFormData) {
+    console.log(values);
     const res = await createBillingInformation(values);
 
     toast({
@@ -63,6 +65,34 @@ export default function BillingInformation() {
 
   const handleCancelLeave = () => {
     setLeaveState(false);
+  };
+
+  const formatCardNumber = (value: string) => {
+    if (!value) return "";
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{4})/g, "$1 ")
+      .trim();
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value.replace(/\D/g, "");
+    if (input.length <= 16) {
+      e.target.value = formatCardNumber(input);
+      form.setValue("cardNumber", input);
+    }
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value.replace(/\D/g, "");
+    if (inputValue.length > 4) {
+      inputValue = inputValue.slice(0, 4);
+    }
+    if (inputValue.length > 2) {
+      inputValue = inputValue.slice(0, 2) + "/" + inputValue.slice(2);
+    }
+    e.target.value = inputValue;
+    setValue("expiration", inputValue);
   };
 
   if (mounted) {
@@ -102,12 +132,19 @@ export default function BillingInformation() {
                     <FormItem className="relative">
                       <FormLabel>Card number</FormLabel>
                       <FormControl>
-                        <Input placeholder="1234 1234 1234 1234" {...field} />
+                        <Input
+                          placeholder="1234 1234 1234 1234"
+                          {...field}
+                          value={formatCardNumber(field.value)}
+                          onChange={(e) => handleCardNumberChange(e)}
+                          maxLength={19}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="cardHolder"
@@ -129,7 +166,11 @@ export default function BillingInformation() {
                       <FormItem className="relative">
                         <FormLabel>Expiry</FormLabel>
                         <FormControl>
-                          <Input placeholder="MM/YY" {...field} />
+                          <Input
+                            placeholder="MM/YY"
+                            {...field}
+                            onChange={handleExpiryChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

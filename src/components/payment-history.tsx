@@ -22,6 +22,28 @@ export default function PaymentHistory() {
     async () => await getPayments(),
   );
 
+  const handleDownload = async (url: string) => {
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/pdf",
+        },
+      });
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = "invoice.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Download failed", error);
+    }
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -86,17 +108,15 @@ export default function PaymentHistory() {
                     {plan}
                   </TableCell>
                   <TableCell className="text-right">
-                    <a
-                      href={invoice_url}
-                      download
+                    <button
+                      onClick={() => handleDownload(invoice_url)}
                       className={buttonVariants({
                         variant: "linkColor",
                         size: "medium",
                       })}
-                      target="_blank"
                     >
                       Download
-                    </a>
+                    </button>
                   </TableCell>
                 </TableRow>
               ),

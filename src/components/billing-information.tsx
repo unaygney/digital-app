@@ -44,13 +44,12 @@ export default function BillingInformation() {
   const { pendingUrl } = useCustomNavigationGuard(isDirty, setLeaveState);
 
   async function onSubmit(values: BillingInformationFormData) {
-    console.log(values);
     const res = await createBillingInformation(values);
 
     toast({
       description: res.message,
     });
-    reset();
+    reset(values);
     router.refresh();
   }
 

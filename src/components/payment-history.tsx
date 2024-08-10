@@ -14,6 +14,7 @@ import { Badge } from "./ui/badge";
 import { BankCard } from "./icons";
 import { useQuery, useQueryClient } from "react-query";
 import { getPayments } from "@/app/(dashboard)/settings/billing/actions";
+import moment from "moment";
 
 export default function PaymentHistory() {
   const queryClient = useQueryClient();
@@ -21,6 +22,8 @@ export default function PaymentHistory() {
     "payments",
     async () => await getPayments(),
   );
+
+  console.log(payments);
 
   const handleDownload = async (url: string) => {
     try {
@@ -88,10 +91,13 @@ export default function PaymentHistory() {
           </TableHeader>
           <TableBody>
             {payments?.map(
-              ({ invoice_url, status, amount, plan, created_at }, idx) => (
+              (
+                { amount, downloadLink, invoiceStart, planType, status },
+                idx,
+              ) => (
                 <TableRow key={idx}>
                   <TableCell className="text-sm font-medium text-neutral-900">
-                    {created_at}
+                    {moment(invoiceStart).format("D MMM, YYYY")}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -105,11 +111,11 @@ export default function PaymentHistory() {
                     ${amount.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-sm font-normal capitalize leading-5 text-neutral-600">
-                    {plan}
+                    {planType}
                   </TableCell>
                   <TableCell className="text-right">
                     <button
-                      onClick={() => handleDownload(invoice_url)}
+                      onClick={() => handleDownload(downloadLink)}
                       className={buttonVariants({
                         variant: "linkColor",
                         size: "medium",

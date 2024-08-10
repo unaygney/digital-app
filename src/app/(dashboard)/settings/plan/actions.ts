@@ -23,7 +23,11 @@ export const updateBillingPlan = async (data: PlanFormData) => {
 
   const user = await db.user.findUnique({
     where: { email },
-    include: { subscription: true, billingInformation: true },
+    include: {
+      subscription: true,
+      billingInformation: true,
+      subscriptionHistory: true,
+    },
   });
 
   if (!user?.billingInformation) {
@@ -34,8 +38,21 @@ export const updateBillingPlan = async (data: PlanFormData) => {
     return { message: "User not found" };
   }
 
+  if (!user.subscription) {
+    return { message: "Subscription not found" };
+  }
+
   // get plan and update or downgrade
   const { plan } = data;
+
+  //! Make a request to the stripe API to payment
+  /*
+First , we need a custom payment flow to handle the payment for the subscription.
+We will use the stripe API to handle the payment flow.
+Current Subscription Plan must be Pending.
+We will update the plan when webhook is received from stripe (only if success ).
+
+*/
 
   // handle price and expiry date based on plan
   let pricing = 0;
@@ -54,6 +71,7 @@ export const updateBillingPlan = async (data: PlanFormData) => {
     expiryDate.setMonth(expiryDate.getMonth() + 1);
   }
 
+  // update currenct subcribe plan
   const subscribe = await db.subscription.update({
     where: { userId: user.id },
     data: {
@@ -61,6 +79,7 @@ export const updateBillingPlan = async (data: PlanFormData) => {
       previousPlan: user.subscription?.planType,
       pricing,
       expiryDate,
+      status: "pending",
     },
   });
 

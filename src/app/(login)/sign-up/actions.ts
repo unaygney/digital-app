@@ -64,6 +64,9 @@ export async function create(data: {
       },
     };
 
+    const invoiceStart = new Date();
+    const invoiceEnd = new Date();
+    invoiceEnd.setMonth(invoiceEnd.getMonth() + 1);
     // Create user
     let newUser = await db.user.create({
       data: {
@@ -76,6 +79,18 @@ export async function create(data: {
             previousPlan: null,
             expiryDate: null,
             pricing: 0,
+            status: "paid",
+          },
+        },
+        subscriptionHistory: {
+          create: {
+            amount: 0,
+            planType: "starter",
+            invoiceStart: invoiceStart,
+            invoiceEnd: invoiceEnd,
+            downloadLink:
+              "https://vaqybtnqyonvlwtskzmv.supabase.co/storage/v1/object/public/projects-images/billing-history-section/starter/invoices/GFE-0004.pdf",
+            status: "paid",
           },
         },
       },

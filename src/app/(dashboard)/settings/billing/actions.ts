@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { getTokenAndVerify, verifyJwtToken } from "@/lib/auth";
+import { stripe } from "@/lib/stripe";
 import {
   BillingInformationFormData,
   billingInformationSchema,
@@ -68,4 +69,43 @@ export const getPayments = async () => {
   if (!user) return [];
 
   return user.subscriptionHistory;
+};
+export const createSetupIntent = async () => {
+  const email = await getTokenAndVerify();
+
+  const setupIntent = await stripe.setupIntents.create({
+    payment_method_types: ["card"],
+    metadata: { email },
+  });
+
+  return { clientSecret: setupIntent.client_secret };
+};
+export const updateBillingInformationWithPaymentMethod = async (
+  paymentId: string,
+) => {
+  const email = await getTokenAndVerify();
+
+  const user = await db.user.findUnique({
+    where: { email },
+    include: { billingInformation: true, subscription: true },
+  });
+
+  if (!user) return { message: "User not found" };
+
+  if (!user.billingInformation) {
+    return { message: "Billing information not found" };
+  }
+
+  if (!user.subscription) {
+    return { message: "Subscription not found" };
+  }
+
+  await db.subscription.update({
+    where: { id: user.subscription.id },
+    data: {
+      paymentId,
+    },
+  });
+
+  return { message: "Billing information updated" };
 };

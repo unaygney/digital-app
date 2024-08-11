@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { getTokenAndVerify } from "@/lib/auth";
+import { getTokenAndVerify, verifyJwtToken } from "@/lib/auth";
 import {
   BillingInformationFormData,
   billingInformationSchema,
@@ -21,15 +21,13 @@ export const createBillingInformation = async (
   }
 
   const {
-    cardNumber,
-    cardHolder,
     email: billingEmail,
-    cvv,
+
     address,
     city,
     zip,
     country,
-    expiration,
+
     state,
     address2,
   } = data;
@@ -47,15 +45,11 @@ export const createBillingInformation = async (
 
   await db.billingInformation.create({
     data: {
-      cardNumber,
-      cardHolder,
       email: billingEmail,
-      cvv,
       address,
       city,
       zip,
       country,
-      expiration,
       state,
       address2,
       userId: user.id,

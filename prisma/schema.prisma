@@ -48,19 +48,15 @@ model User {
 }
 
 model BillingInformation {
-  id         Int     @id @default(autoincrement())
-  userId     String  @unique
-  cardNumber String
-  cardHolder String
-  expiration String
-  cvv        String
-  email      String
-  country    String
-  address    String
-  address2   String?
-  city       String
-  state      String
-  zip        String
+  id       Int     @id @default(autoincrement())
+  userId   String  @unique
+  email    String
+  country  String
+  address  String
+  address2 String?
+  city     String
+  state    String
+  zip      String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

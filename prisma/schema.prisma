@@ -86,6 +86,7 @@ model Subscription {
   previousPlan PlanType?     @default(starter)
   pricing      Float         @default(0)
   status       PaymentStatus @default(pending)
+  paymentId    String?       @unique
   expiryDate   DateTime?
 
   createdAt DateTime @default(now())

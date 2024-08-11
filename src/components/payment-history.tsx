@@ -92,8 +92,20 @@ export default function PaymentHistory() {
           <TableBody>
             {payments?.map(
               (
-                { amount, downloadLink, invoiceStart, planType, status },
-                idx,
+                {
+                  amount,
+                  downloadLink,
+                  invoiceStart,
+                  planType,
+                  status,
+                }: {
+                  amount: number;
+                  downloadLink: string;
+                  invoiceStart: Date;
+                  planType: string;
+                  status: string;
+                },
+                idx: number,
               ) => (
                 <TableRow key={idx}>
                   <TableCell className="text-sm font-medium text-neutral-900">

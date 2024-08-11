@@ -18,8 +18,11 @@ import {
   billingInformationSchema,
 } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createBillingInformation } from "@/app/(dashboard)/settings/billing/actions";
-import { useRouter } from "next/navigation";
+import {
+  createBillingInformation,
+  createSetupIntent,
+  updateBillingInformationWithPaymentMethod,
+} from "@/app/(dashboard)/settings/billing/actions";
 
 import { useCustomNavigationGuard } from "@/hooks/use-unsaved-changes";
 import { LeaveAlertDialog } from "./leave-modal";
@@ -33,14 +36,11 @@ import {
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
 
 export default function BillingInformation() {
-  const router = useRouter();
   const [leaveState, setLeaveState] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
-  const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
-
-  const [message, setMessage] = React.useState<string | null>(null);
+  const { toast } = useToast();
 
   const form = useForm<BillingInformationFormData>({
     resolver: zodResolver(billingInformationSchema),
@@ -62,32 +62,52 @@ export default function BillingInformation() {
     if (!clientSecret) {
       return;
     }
-
-    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch (paymentIntent?.status) {
-        case "succeeded":
-          setMessage("Payment succeeded!");
-          break;
-        case "processing":
-          setMessage("Your payment is processing.");
-          break;
-        case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
-          break;
-        default:
-          setMessage("Something went wrong.");
-          break;
-      }
-    });
   }, [stripe]);
 
   const { pendingUrl } = useCustomNavigationGuard(isDirty, setLeaveState);
 
   async function onSubmit(values: BillingInformationFormData) {
-    console.log(values);
-
     if (!stripe || !elements) {
       return;
+    }
+
+    const { clientSecret } = await createSetupIntent();
+
+    if (!clientSecret) {
+      console.log("Error creating setup intent");
+      return;
+    }
+
+    const { error: submitError } = await elements.submit();
+
+    if (submitError) {
+      console.error(submitError.message);
+      return;
+    }
+
+    const result = await stripe.confirmSetup({
+      clientSecret,
+      elements,
+      redirect: "if_required",
+    });
+
+    if (result.error) {
+      toast({
+        description: result.error.message,
+      });
+    } else if ("setupIntent" in result && result.setupIntent) {
+      const { payment_method } = result.setupIntent;
+
+      const res = await updateBillingInformationWithPaymentMethod(
+        payment_method as string,
+      );
+      const res2 = await createBillingInformation(values);
+
+      toast({
+        description: "Payment information saved successfully!",
+      });
+
+      reset(values);
     }
   }
 
@@ -115,7 +135,7 @@ export default function BillingInformation() {
         className="flex w-full max-w-[1216px] flex-col gap-8"
       >
         <PaymentHistory />
-        <div>message : {message}</div>
+
         <div className="flex flex-col gap-2">
           <h3 className="text-xl font-semibold leading-7 text-neutral-900">
             Billing Information

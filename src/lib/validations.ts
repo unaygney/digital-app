@@ -89,24 +89,9 @@ export const notificationsSettingsSchema = z.object({
 });
 
 export const billingInformationSchema = z.object({
-  cardNumber: z
-    .string()
-    .length(16, "Card number must be 16 digits long")
-    .regex(/^\d{16}$/, "Card number must contain only numbers"),
-  cardHolder: z.string().min(1, "Card holder name is required"),
-  expiration: z
-    .string()
-    .regex(
-      /^(0[1-9]|1[0-2])\/\d{2}$/,
-      "Expiry date must be in the format MM/YY",
-    ),
-  cvv: z
-    .string()
-    .length(3, "CVC must be 3 digits long")
-    .regex(/^\d{3}$/, "CVC must contain only numbers"),
   email: z.string().email("Invalid email address"),
   address: z.string().min(1, "Address is required"),
-  address2: z.string().optional(), // Optional field
+  address2: z.string().optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   zip: z

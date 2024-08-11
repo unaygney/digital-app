@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
 import {
@@ -24,36 +24,74 @@ import { useRouter } from "next/navigation";
 import { useCustomNavigationGuard } from "@/hooks/use-unsaved-changes";
 import { LeaveAlertDialog } from "./leave-modal";
 import PaymentHistory from "./payment-history";
+
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import { StripePaymentElementOptions } from "@stripe/stripe-js";
+
 export default function BillingInformation() {
   const router = useRouter();
   const [leaveState, setLeaveState] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [message, setMessage] = React.useState<string | null>(null);
 
   const form = useForm<BillingInformationFormData>({
     resolver: zodResolver(billingInformationSchema),
   });
-
   const {
-    watch,
     reset,
-    setValue,
     formState: { isSubmitting, isDirty },
   } = form;
+
+  React.useEffect(() => {
+    if (!stripe) {
+      return;
+    }
+
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret",
+    );
+
+    if (!clientSecret) {
+      return;
+    }
+
+    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      switch (paymentIntent?.status) {
+        case "succeeded":
+          setMessage("Payment succeeded!");
+          break;
+        case "processing":
+          setMessage("Your payment is processing.");
+          break;
+        case "requires_payment_method":
+          setMessage("Your payment was not successful, please try again.");
+          break;
+        default:
+          setMessage("Something went wrong.");
+          break;
+      }
+    });
+  }, [stripe]);
 
   const { pendingUrl } = useCustomNavigationGuard(isDirty, setLeaveState);
 
   async function onSubmit(values: BillingInformationFormData) {
-    const res = await createBillingInformation(values);
+    console.log(values);
 
-    toast({
-      description: res.message,
-    });
-    reset(values);
-    router.refresh();
+    if (!stripe || !elements) {
+      return;
+    }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     setMounted(true);
   }, []);
 
@@ -66,32 +104,8 @@ export default function BillingInformation() {
     setLeaveState(false);
   };
 
-  const formatCardNumber = (value: string) => {
-    if (!value) return "";
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{4})/g, "$1 ")
-      .trim();
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.replace(/\D/g, "");
-    if (input.length <= 16) {
-      e.target.value = formatCardNumber(input);
-      form.setValue("cardNumber", input);
-    }
-  };
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value.replace(/\D/g, "");
-    if (inputValue.length > 4) {
-      inputValue = inputValue.slice(0, 4);
-    }
-    if (inputValue.length > 2) {
-      inputValue = inputValue.slice(0, 2) + "/" + inputValue.slice(2);
-    }
-    e.target.value = inputValue;
-    setValue("expiration", inputValue);
+  const options: StripePaymentElementOptions = {
+    layout: { type: "tabs" },
   };
 
   if (mounted) {
@@ -101,7 +115,7 @@ export default function BillingInformation() {
         className="flex w-full max-w-[1216px] flex-col gap-8"
       >
         <PaymentHistory />
-
+        <div>message : {message}</div>
         <div className="flex flex-col gap-2">
           <h3 className="text-xl font-semibold leading-7 text-neutral-900">
             Billing Information
@@ -123,74 +137,13 @@ export default function BillingInformation() {
                   Payment Details
                 </h4>
               </div>
-              <div className="flex flex-1 flex-col gap-6">
-                <FormField
-                  control={form.control}
-                  name="cardNumber"
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <FormLabel>Card number</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="1234 1234 1234 1234"
-                          {...field}
-                          value={formatCardNumber(field.value)}
-                          onChange={(e) => handleCardNumberChange(e)}
-                          maxLength={19}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="cardHolder"
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <FormLabel>Cardholder name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Full name on card" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-8">
-                  <FormField
-                    control={form.control}
-                    name="expiration"
-                    render={({ field }) => (
-                      <FormItem className="relative">
-                        <FormLabel>Expiry</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="MM/YY"
-                            {...field}
-                            onChange={handleExpiryChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="cvv"
-                    render={({ field }) => (
-                      <FormItem className="relative">
-                        <FormLabel>CVV</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
+              <PaymentElement
+                className="w-full"
+                id="payment-element"
+                options={options}
+              />
             </div>
+
             {/* Email Address */}
             <div className="flex flex-col gap-6 border-y border-neutral-200 py-8 md:flex-row">
               <div className="w-full md:max-w-[213px] lg:max-w-[385px]">
@@ -318,6 +271,7 @@ export default function BillingInformation() {
             </Button>
           </form>
         </Form>
+
         <LeaveAlertDialog
           leaveState={leaveState}
           onConfirm={handleConfirmLeave}

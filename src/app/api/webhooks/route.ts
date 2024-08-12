@@ -20,13 +20,49 @@ export async function POST(req: NextRequest) {
     );
 
     if (event.type === "payment_intent.succeeded") {
-      const session = event.data
-        .object as unknown as Stripe.PaymentIntent.Status;
+      const session = event.data.object as Stripe.PaymentIntent;
 
-      console.log("session => ", session);
-      console.log("event => ", event);
+      // get the customer
+      const customerId = session.customer as string;
+      const customer = await stripe.customers.retrieve(customerId);
 
-      const response = NextResponse.json({ success: true });
+      // get the email
+      let email = "";
+      if ((customer as Stripe.Customer).email) {
+        email = (customer as Stripe.Customer).email as string;
+      } else {
+        console.log(
+          "This customer might be deleted or does not have an email.",
+        );
+      }
+
+      const user = await db.user.findUnique({
+        where: { email },
+      });
+      if (!user)
+        NextResponse.json({ error: "User not found" }, { status: 400 });
+
+      // Update the user's subscription status in the database
+      await db.subscription.update({
+        where: { userId: user?.id },
+        data: {
+          status: "paid",
+        },
+      });
+      //! not correct code but you get the idea
+      await db.subscriptionHistory.updateMany({
+        where: {
+          status: "pending",
+        },
+        data: {
+          status: "paid",
+        },
+      });
+
+      const response = NextResponse.json({
+        success: true,
+        message: "Subscription status update",
+      });
       return response;
     }
   } catch (e) {

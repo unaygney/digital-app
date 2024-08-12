@@ -101,6 +101,7 @@ export default function BillingInformation() {
       const res = await updateBillingInformationWithPaymentMethod(
         payment_method as string,
       );
+
       const res2 = await createBillingInformation(values);
 
       toast({

@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
+import { stripe } from "@/lib/stripe";
 import { PlanFormData, planSchema } from "@/lib/validations";
 
 export const updateBillingPlan = async (data: PlanFormData) => {
@@ -45,15 +46,6 @@ export const updateBillingPlan = async (data: PlanFormData) => {
   // get plan and update or downgrade
   const { plan } = data;
 
-  //! Make a request to the stripe API to payment
-  /*
-First , we need a custom payment flow to handle the payment for the subscription.
-We will use the stripe API to handle the payment flow.
-Current Subscription Plan must be Pending.
-We will update the plan when webhook is received from stripe (only if success ).
-
-*/
-
   // handle price and expiry date based on plan
   let pricing = 0;
   let expiryDate = null;
@@ -71,17 +63,55 @@ We will update the plan when webhook is received from stripe (only if success ).
     expiryDate.setMonth(expiryDate.getMonth() + 1);
   }
 
-  // update currenct subcribe plan
-  const subscribe = await db.subscription.update({
-    where: { userId: user.id },
-    data: {
-      planType: plan,
-      previousPlan: user.subscription?.planType,
-      pricing,
-      expiryDate,
-      status: "pending",
-    },
+  // check if paymentId is available
+  if (!user.subscription.paymentId) {
+    return { message: "Payment method not found" };
+  }
+
+  if (!user.subscription.customerId) return { message: "Customer not found" };
+
+  //! Make a request to the stripe API to payment
+
+  const createPayment = await stripe.paymentIntents.create({
+    amount: pricing * 100,
+    currency: "usd",
+    customer: user.subscription.customerId,
+    payment_method: user.subscription.paymentId,
+    off_session: true,
+    confirm: true,
   });
 
-  return { message: "Plan updated successfully", subscribe };
+  if (createPayment.status === "succeeded") {
+    console.log("Ödeme başarılı:", createPayment);
+
+    // update currenct subcribe plan
+    const subscribe = await db.subscription.update({
+      where: { userId: user.id },
+      data: {
+        planType: plan,
+        previousPlan: user.subscription?.planType,
+        pricing,
+        expiryDate,
+        status: "pending",
+      },
+    });
+
+    // add record to subscription history
+    await db.subscriptionHistory.create({
+      data: {
+        userId: user.id,
+        invoiceStart: new Date(),
+        invoiceEnd: expiryDate!,
+        status: "pending",
+        amount: pricing,
+        planType: plan,
+        downloadLink: "",
+      },
+    });
+
+    return { message: "Plan updated successfully", subscribe };
+  } else {
+    console.log("Ödeme durumu:", createPayment.status);
+    return { message: "Payment failed" };
+  }
 };

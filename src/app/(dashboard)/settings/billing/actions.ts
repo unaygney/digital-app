@@ -44,8 +44,18 @@ export const createBillingInformation = async (
     return { message: "Billing information already exists" };
   }
 
-  await db.billingInformation.create({
-    data: {
+  const billingInformation = await db.billingInformation.upsert({
+    where: { userId: user.id },
+    update: {
+      email: billingEmail,
+      address,
+      city,
+      zip,
+      country,
+      state,
+      address2,
+    },
+    create: {
       email: billingEmail,
       address,
       city,
@@ -73,9 +83,28 @@ export const getPayments = async () => {
 export const createSetupIntent = async () => {
   const email = await getTokenAndVerify();
 
+  const user = await db.user.findUnique({
+    where: { email },
+    include: { billingInformation: true },
+  });
+
+  if (!user) return { message: "User not found" };
+
+  const customer = await stripe.customers.create({
+    email: user.email,
+  });
+
   const setupIntent = await stripe.setupIntents.create({
     payment_method_types: ["card"],
-    metadata: { email },
+    customer: customer.id,
+    metadata: { email, userId: user.id, customerId: customer.id },
+  });
+
+  await db.subscription.update({
+    where: { userId: user.id },
+    data: {
+      customerId: customer.id,
+    },
   });
 
   return { clientSecret: setupIntent.client_secret };
@@ -83,29 +112,33 @@ export const createSetupIntent = async () => {
 export const updateBillingInformationWithPaymentMethod = async (
   paymentId: string,
 ) => {
-  const email = await getTokenAndVerify();
+  try {
+    const email = await getTokenAndVerify();
 
-  const user = await db.user.findUnique({
-    where: { email },
-    include: { billingInformation: true, subscription: true },
-  });
+    const user = await db.user.findUnique({
+      where: { email },
+      include: { billingInformation: true, subscription: true },
+    });
 
-  if (!user) return { message: "User not found" };
+    if (!user) return { message: "User not found" };
 
-  if (!user.billingInformation) {
-    return { message: "Billing information not found" };
+    if (!user.billingInformation) {
+      return { message: "Billing information not found" };
+    }
+
+    if (!user.subscription) {
+      return { message: "Subscription not found" };
+    }
+
+    await db.subscription.update({
+      where: { id: user.subscription.id },
+      data: {
+        paymentId,
+      },
+    });
+
+    return { message: "Billing information updated" };
+  } catch (e) {
+    console.log(e);
   }
-
-  if (!user.subscription) {
-    return { message: "Subscription not found" };
-  }
-
-  await db.subscription.update({
-    where: { id: user.subscription.id },
-    data: {
-      paymentId,
-    },
-  });
-
-  return { message: "Billing information updated" };
 };

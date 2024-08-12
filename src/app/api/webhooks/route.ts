@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
       const session = event.data
         .object as unknown as Stripe.PaymentIntent.Status;
 
-      console.log(session);
+      console.log("session => ", session);
+      console.log("event => ", event);
 
       const response = NextResponse.json({ success: true });
       return response;

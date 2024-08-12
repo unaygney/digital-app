@@ -19,8 +19,9 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
+    if (event.type === "payment_intent.succeeded") {
+      const session = event.data
+        .object as unknown as Stripe.PaymentIntent.Status;
 
       console.log(session);
 

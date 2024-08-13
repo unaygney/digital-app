@@ -37,3 +37,12 @@ export const getTokenAndVerify = async (): Promise<string> => {
 
   return isValidToken.email as string;
 };
+
+/*
+You can add more secured pages by adding the path to the AUTH_PAGES array.
+*/
+export const isSecuredPage = (url: string) => {
+  const AUTH_PAGES = ["/settings"];
+
+  return AUTH_PAGES.some((page) => page.startsWith(url));
+};

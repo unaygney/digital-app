@@ -28,12 +28,13 @@ export const isAuthPages = (url: string) => {
 
   return AUTH_PAGES.some((page) => page.startsWith(url));
 };
-export const getTokenAndVerify = async (): Promise<string> => {
+export const getTokenAndVerify = async (): Promise<string | null> => {
   const cookiesStore = cookies();
   const token = cookiesStore.get("token")?.value ?? "";
 
   const isValidToken = await verifyJwtToken(token);
-  if (!isValidToken || !isValidToken.email) throw new Error("Invalid User");
+
+  if (!isValidToken || !isValidToken.email) return null;
 
   return isValidToken.email as string;
 };

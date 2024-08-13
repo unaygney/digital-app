@@ -1,20 +1,14 @@
-import { db } from "@/db";
-import { getTokenAndVerify } from "@/lib/auth";
-
-import { deleteToken } from "./settings/actions";
-
+import ChatWrapper from "@/components/chat-wrapper";
+import Navbar from "@/components/navbar";
+import SideBar from "@/components/sidebar";
 export default async function Home() {
-  const email = await getTokenAndVerify();
-
-  const user = await db.user.findUnique({
-    where: { email },
-  });
-
-  if (!user) deleteToken();
-
   return (
-    <div className="flex h-full w-full p-4">
-      <p>test</p>
+    <div className="flex h-full w-full flex-col lg:flex-row">
+      <Navbar />
+
+      <SideBar className="hidden w-full max-w-[240px] border-r border-neutral-200 lg:flex" />
+
+      <ChatWrapper />
     </div>
   );
 }

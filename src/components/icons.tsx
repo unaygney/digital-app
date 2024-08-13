@@ -166,3 +166,185 @@ export function Brifcase(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+export function Logo(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+    >
+      <path
+        d="M11.6835 24.089L6.83325 25.1668L7.91108 20.3166C7.22324 19.0303 6.83325 17.5608 6.83325 16.0002C6.83325 10.9376 10.9373 6.8335 15.9999 6.8335C21.0625 6.8335 25.1666 10.9376 25.1666 16.0002C25.1666 21.0627 21.0625 25.1668 15.9999 25.1668C14.4393 25.1668 12.9698 24.7769 11.6835 24.089ZM11.4166 16.0002C11.4166 18.5314 13.4686 20.5835 15.9999 20.5835C18.5312 20.5835 20.5833 18.5314 20.5833 16.0002H18.7499C18.7499 17.519 17.5187 18.7502 15.9999 18.7502C14.4811 18.7502 13.2499 17.519 13.2499 16.0002H11.4166Z"
+        fill="#4338CA"
+      />
+    </svg>
+  );
+}
+export function Menu(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"
+        fill="#404040"
+      />
+    </svg>
+  );
+}
+export function Close(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M9.00049 8.0184L12.4378 4.58105L13.4199 5.56314L9.98257 9.00049L13.4199 12.4378L12.4378 13.4199L9.00049 9.98257L5.56314 13.4199L4.58105 12.4378L8.0184 9.00049L4.58105 5.56314L5.56314 4.58105L9.00049 8.0184Z"
+        fill="#525252"
+      />
+    </svg>
+  );
+}
+export function Flashlight(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+    >
+      <path
+        d="M10.8333 7.5H17.4999L9.16658 20V12.5H3.33325L10.8333 0V7.5ZM9.16658 9.16667V6.01719L6.2769 10.8333H10.8333V14.4953L14.3858 9.16667H9.16658Z"
+        fill="#4338CA"
+      />
+    </svg>
+  );
+}
+export function Sparkling(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <g clipPath="url(#clip0_14_18564)">
+        <path
+          d="M12.4727 1.50537L13.3885 3.22261L15.1058 4.13848L13.3885 5.05434L12.4727 6.77157L11.5568 5.05434L9.83957 4.13848L11.5568 3.22261L12.4727 1.50537ZM8.0745 7.14773L11.5467 8.9996L8.0745 10.8514L6.22266 14.3236L4.37081 10.8514L0.89859 8.9996L4.37081 7.14773L6.22266 3.67551L8.0745 7.14773ZM8.59534 8.9996L7.04794 8.17432L6.22266 6.6269L5.39738 8.17432L3.84998 8.9996L5.39738 9.82488L6.22266 11.3722L7.04794 9.82488L8.59534 8.9996ZM14.3245 12.0088L13.1671 9.8387L12.0097 12.0088L9.83957 13.1663L12.0097 14.3236L13.1671 16.4938L14.3245 14.3236L16.4946 13.1663L14.3245 12.0088Z"
+          fill="#171717"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_14_18564">
+          <rect
+            width="16.6667"
+            height="16.6667"
+            fill="white"
+            transform="translate(0.666656 0.666504)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+export function Mail(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M2.24283 6.85419L11.4895 1.30843C11.8062 1.11848 12.2019 1.11855 12.5185 1.30862L21.7573 6.85416C21.9079 6.94453 22 7.10726 22 7.28286V19.9998C22 20.5521 21.5523 20.9998 21 20.9998H3C2.44772 20.9998 2 20.5521 2 19.9998V7.28298C2 7.10732 2.09218 6.94454 2.24283 6.85419ZM4 8.13244V18.9998H20V8.13197L12.0037 3.33221L4 8.13244ZM12.0597 13.6981L17.3556 9.23515L18.6444 10.7645L12.074 16.3016L5.36401 10.7715L6.63599 9.22813L12.0597 13.6981Z"
+        fill="#4338CA"
+      />
+    </svg>
+  );
+}
+export function Pen(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M15.7279 9.57629L14.3137 8.16207L5 17.4758V18.89H6.41421L15.7279 9.57629ZM17.1421 8.16207L18.5563 6.74786L17.1421 5.33365L15.7279 6.74786L17.1421 8.16207ZM7.24264 20.89H3V16.6474L16.435 3.21233C16.8256 2.8218 17.4587 2.8218 17.8492 3.21233L20.6777 6.04075C21.0682 6.43128 21.0682 7.06444 20.6777 7.45497L7.24264 20.89Z"
+        fill="#15803D"
+      />
+    </svg>
+  );
+}
+export function Timeline(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M3 3C2.44772 3 2 3.44772 2 4V20C2 20.5523 2.44772 21 3 21H21C21.5523 21 22 20.5523 22 20V4C22 3.44772 21.5523 3 21 3H3ZM4 19V5H20V19H4ZM14 7H6V9H14V7ZM18 15V17H10V15H18ZM16 11H8V13H16V11Z"
+        fill="#C026D3"
+      />
+    </svg>
+  );
+}
+export function Chat(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3ZM12 17H14C17.3137 17 20 14.3137 20 11C20 7.68629 17.3137 5 14 5H10C6.68629 5 4 7.68629 4 11C4 14.61 6.46208 16.9656 12 19.4798V17Z"
+        fill="#F97316"
+      />
+    </svg>
+  );
+}
+export function SendPlane(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+    >
+      <path
+        d="M2.75 9.69465H6.91667V8.30576H2.75V1.94854C2.75 1.75678 2.90546 1.60132 3.09722 1.60132C3.15573 1.60132 3.21329 1.6161 3.26456 1.6443L16.0857 8.69597C16.2538 8.78833 16.3151 8.99951 16.2226 9.1675C16.1909 9.22521 16.1434 9.27271 16.0857 9.30444L3.26456 16.356C3.09653 16.4485 2.8854 16.3872 2.79298 16.2192C2.76478 16.1679 2.75 16.1103 2.75 16.0518V9.69465Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

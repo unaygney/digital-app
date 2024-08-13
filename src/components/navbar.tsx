@@ -4,14 +4,14 @@ import { useState } from "react";
 import SideBar from "./sidebar";
 import { Logo, Menu } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
-
-export default function Sidebar() {
+import { User } from "@prisma/client";
+export default function Navbar({ user }: { user: Partial<User> | null }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <header className="w-full border-b border-neutral-200 px-3 py-4 lg:hidden">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:px-5">
           <div className="flex items-center gap-0.5">
             <Logo />
             <h2 className="text-base font-bold leading-6 tracking-[-0.96px] text-neutral-900">
@@ -49,7 +49,7 @@ export default function Sidebar() {
               className="fixed left-0 top-0 z-50 h-full bg-white lg:hidden"
               style={{ width: "90%", overflow: "hidden" }}
             >
-              <SideBar open={open} setOpen={setOpen} />
+              <SideBar open={open} setOpen={setOpen} user={user} />
             </motion.div>
 
             <motion.div

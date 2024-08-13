@@ -82,8 +82,6 @@ export const updateBillingPlan = async (data: PlanFormData) => {
   });
 
   if (createPayment.status === "succeeded") {
-    console.log("Ödeme başarılı:", createPayment);
-
     // update currenct subcribe plan
     const subscribe = await db.subscription.update({
       where: { userId: user.id },

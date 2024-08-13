@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isAuthPages, verifyJwtToken } from "./lib/auth";
+import { isAuthPages, isSecuredPage, verifyJwtToken } from "./lib/auth";
 
 export async function middleware(request: NextRequest) {
   const { url, cookies, nextUrl } = request;
@@ -8,8 +8,15 @@ export async function middleware(request: NextRequest) {
 
   const hasVerifiedToken = token && (await verifyJwtToken(token));
   const isAuthpageRequested = isAuthPages(nextUrl.pathname);
+  const isSecuredPageRequested = isSecuredPage(nextUrl.pathname);
 
-  if (nextUrl.pathname === "/" || nextUrl.pathname.startsWith("/settings")) {
+  // Main page is not secured user can access it without token
+  if (nextUrl.pathname === "/") {
+    return NextResponse.next();
+  }
+
+  // If the page is secured and the user has a verified token, allow access (like settings page)
+  if (isSecuredPageRequested) {
     if (hasVerifiedToken) {
       const response = NextResponse.next();
       return response;
@@ -18,6 +25,7 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // If the page is an auth page and the user has a verified token, redirect to the main page
   if (isAuthpageRequested) {
     if (hasVerifiedToken) {
       const response = NextResponse.redirect(new URL("/", url));

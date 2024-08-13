@@ -1,6 +1,7 @@
 import "server-only";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 export const getJwtSecretKey = () => {
   const secretKey = process.env.SECRET_KEY;
 
@@ -28,13 +29,13 @@ export const isAuthPages = (url: string) => {
 
   return AUTH_PAGES.some((page) => page.startsWith(url));
 };
-export const getTokenAndVerify = async (): Promise<string | null> => {
+export const getTokenAndVerify = async (): Promise<string> => {
   const cookiesStore = cookies();
   const token = cookiesStore.get("token")?.value ?? "";
 
   const isValidToken = await verifyJwtToken(token);
 
-  if (!isValidToken || !isValidToken.email) return null;
+  if (!isValidToken || !isValidToken.email) redirect("/sign-in");
 
   return isValidToken.email as string;
 };

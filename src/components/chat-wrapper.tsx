@@ -38,11 +38,11 @@ const SUGGESTION = [
 ] as const;
 
 export default function ChatWrapper({
-  noSuggestion,
+  noSuggestion = false,
   chats,
 }: {
   noSuggestion?: boolean;
-  chats: Message[] | undefined;
+  chats?: Message[] | undefined;
 }) {
   const container = {
     hidden: { opacity: 1, scale: 0 },

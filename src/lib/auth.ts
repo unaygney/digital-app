@@ -35,7 +35,7 @@ export const getTokenAndVerify = async (): Promise<string> => {
 
   const isValidToken = await verifyJwtToken(token);
 
-  if (!isValidToken || !isValidToken.email) redirect("/sign-in");
+  if (!isValidToken || !isValidToken.email) return "token verification failed";
 
   return isValidToken.email as string;
 };

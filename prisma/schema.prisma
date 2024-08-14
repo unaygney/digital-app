@@ -43,6 +43,7 @@ model User {
   billingInformation  BillingInformation?
   subscription        Subscription?
   subscriptionHistory SubscriptionHistory[]
+  chats               Chat[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,4 +112,31 @@ model SubscriptionHistory {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Chat {
+  id       String    @id @default(uuid())
+  userId   String?
+  title    String?
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id        Int        @id @default(autoincrement())
+  chatId    String
+  sender    SenderType
+  content   String
+  timestamp DateTime   @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id])
+}
+
+enum SenderType {
+  USER
+  AI
 }

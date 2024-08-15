@@ -43,7 +43,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
         chats={chats}
       />
 
-      <ChatWrapper noSuggestion={true} chats={chat?.messages} />
+      <ChatWrapper noSuggestion={true} chats={chat?.messages} chatId={id} />
     </div>
   );
 }

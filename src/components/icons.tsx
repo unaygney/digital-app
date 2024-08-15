@@ -433,3 +433,20 @@ export function Copy(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+export function File(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+    >
+      <path
+        d="M16.6667 18.3334H3.33333C2.8731 18.3334 2.5 17.9603 2.5 17.5001V2.50008C2.5 2.03985 2.8731 1.66675 3.33333 1.66675H16.6667C17.1269 1.66675 17.5 2.03985 17.5 2.50008V17.5001C17.5 17.9603 17.1269 18.3334 16.6667 18.3334ZM15.8333 16.6667V3.33341H4.16667V16.6667H15.8333ZM6.66667 5.83341H13.3333V7.50008H6.66667V5.83341ZM6.66667 9.16675H13.3333V10.8334H6.66667V9.16675ZM6.66667 12.5001H10.8333V14.1667H6.66667V12.5001Z"
+        fill="#525252"
+      />
+    </svg>
+  );
+}

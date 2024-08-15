@@ -8,6 +8,7 @@ import {
   MoreLine,
   Settings,
   Logout,
+  File,
 } from "./icons";
 import { cn, getInitials } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
@@ -21,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout, newChat } from "@/app/(dashboard)/actions";
+import { usePathname } from "next/navigation";
 
 export default function SideBar({
   open,
@@ -47,7 +49,12 @@ export default function SideBar({
     await newChat();
   };
 
-  console.log(chats);
+  const pathname = usePathname();
+  const activeChatId = pathname.split("/")[2];
+
+  // Aktif olan chat ve geçmiş olan chatleri ayırıyoruz
+  const activeChat = chats?.find((chat) => chat.id === activeChatId);
+  const pastChats = chats?.filter((chat) => chat.id !== activeChatId);
 
   return (
     <aside className={cn("flex h-full w-full flex-col px-4 py-6", className)}>
@@ -56,12 +63,12 @@ export default function SideBar({
           "px-0.5": !open,
         })}
       >
-        <div className="flex items-center gap-0.5">
+        <Link href={"/"} className="flex items-center gap-0.5">
           <Logo />
-          <h2 className="text-base font-bold leading-6 tracking-[-0.96px] text-neutral-900">
+          <p className="text-base font-bold leading-6 tracking-[-0.96px] text-neutral-900">
             Chat AI
-          </h2>
-        </div>
+          </p>
+        </Link>
 
         <button className="lg:hidden" onClick={() => setOpen && setOpen(!open)}>
           <Close />
@@ -69,18 +76,37 @@ export default function SideBar({
       </div>
 
       <div className="flex flex-col gap-4">
-        {chats?.map((chat) => (
+        {activeChat && (
           <Link
-            key={chat.id}
+            key={activeChat.id}
             className="flex gap-2 rounded bg-neutral-50 p-1.5"
-            href={`/chat/${chat.id}`}
+            href={`/chat/${activeChat.id}`}
           >
             <Flashlight />
             <p className="truncate text-sm font-medium leading-5 text-indigo-700">
-              {chat.title ?? "Untitled"}
+              {activeChat.title ?? "Untitled"}
             </p>
           </Link>
-        ))}
+        )}
+        {pastChats && pastChats.length > 0 && (
+          <>
+            <p className="mt-4 text-xs font-medium leading-4 text-neutral-600">
+              Past
+            </p>
+            {pastChats.map((chat) => (
+              <Link
+                key={chat.id}
+                className="flex gap-3"
+                href={`/chat/${chat.id}`}
+              >
+                <File />
+                <p className="truncate text-sm font-medium leading-5 text-neutral-600">
+                  {chat.title ?? "Untitled"}
+                </p>
+              </Link>
+            ))}
+          </>
+        )}
       </div>
 
       <div className="mt-auto flex flex-col gap-4">

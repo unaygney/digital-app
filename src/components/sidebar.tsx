@@ -71,6 +71,7 @@ export default function SideBar({
       <div className="flex flex-col gap-4">
         {chats?.map((chat) => (
           <Link
+            key={chat.id}
             className="flex gap-2 rounded bg-neutral-50 p-1.5"
             href={`/chat/${chat.id}`}
           >

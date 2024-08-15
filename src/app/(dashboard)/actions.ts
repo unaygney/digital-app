@@ -11,10 +11,10 @@ export const logout = async () => {
   return { message: "success" };
 };
 export const sendFirstMessage = async (message: string) => {
+  const sessionId = cookies().get("session_id")?.value;
   let promt = message;
 
   const result = await model.generateContent(promt);
-  // genereta a chat title
   const title = await createChatTitle(message);
 
   //todo: if user already exist then you have to create the chat with the user
@@ -22,6 +22,7 @@ export const sendFirstMessage = async (message: string) => {
 
   const chat = await db.chat.create({
     data: {
+      sessionId,
       title,
       messages: {
         createMany: {
@@ -37,6 +38,17 @@ export const sendFirstMessage = async (message: string) => {
           ],
         },
       },
+    },
+  });
+
+  redirect(`/chat/${chat.id}`);
+};
+export const newChat = async () => {
+  const sessionId = cookies().get("session_id")?.value;
+
+  const chat = await db.chat.create({
+    data: {
+      sessionId,
     },
   });
 

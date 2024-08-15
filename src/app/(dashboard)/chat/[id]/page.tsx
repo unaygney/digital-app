@@ -3,10 +3,12 @@ import Navbar from "@/components/navbar";
 import SideBar from "@/components/sidebar";
 import { db } from "@/db";
 import { getTokenAndVerify } from "@/lib/auth";
+import { cookies } from "next/headers";
 import React from "react";
 
 export default async function ChatPage({ params }: { params: { id: string } }) {
   const email = await getTokenAndVerify();
+  const sessionId = cookies().get("session_id")?.value;
   const { id } = params;
 
   const user =
@@ -16,9 +18,9 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
       },
     })) ?? null;
 
-  const chats = await db.chat.findUnique({
+  const chats = await db.chat.findMany({
     where: {
-      id,
+      sessionId,
     },
     include: {
       messages: {
@@ -29,6 +31,8 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
     },
   });
 
+  const chat = chats.find((chat) => chat.id === id);
+
   return (
     <div className="flex h-full w-full flex-col lg:flex-row">
       <Navbar user={user} />
@@ -36,9 +40,10 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
       <SideBar
         user={user}
         className="hidden w-full max-w-[240px] border-r border-neutral-200 lg:flex"
+        chats={chats}
       />
 
-      <ChatWrapper noSuggestion={true} chats={chats?.messages} />
+      <ChatWrapper noSuggestion={true} chats={chat?.messages} />
     </div>
   );
 }

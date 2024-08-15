@@ -12,28 +12,28 @@ import {
 import { cn, getInitials } from "@/lib/utils";
 import { Button, buttonVariants } from "./ui/button";
 import Link from "next/link";
-import { User } from "@prisma/client";
+import { Chat, User } from "@prisma/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/app/(dashboard)/actions";
+import { logout, newChat } from "@/app/(dashboard)/actions";
 
 export default function SideBar({
   open,
   setOpen,
   className,
   user,
+  chats,
 }: {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   className?: string;
   user?: Partial<User> | null;
+  chats?: Chat[];
 }) {
   const handleLogout = async () => {
     const res = await logout();
@@ -42,6 +42,13 @@ export default function SideBar({
       window.location.reload();
     }
   };
+
+  const handleNewChat = async () => {
+    await newChat();
+  };
+
+  console.log(chats);
+
   return (
     <aside className={cn("flex h-full w-full flex-col px-4 py-6", className)}>
       <div
@@ -61,19 +68,25 @@ export default function SideBar({
         </button>
       </div>
 
-      <div className="flex gap-2 rounded bg-neutral-50 p-1.5">
-        <Flashlight />
-        <p className="text-sm font-medium leading-5 text-indigo-700">
-          Ongoing prompt
-        </p>
+      <div className="flex flex-col gap-4">
+        {chats?.map((chat) => (
+          <Link
+            className="flex gap-2 rounded bg-neutral-50 p-1.5"
+            href={`/chat/${chat.id}`}
+          >
+            <Flashlight />
+            <p className="truncate text-sm font-medium leading-5 text-indigo-700">
+              {chat.title ?? "Untitled"}
+            </p>
+          </Link>
+        ))}
       </div>
-
-      <div>this area will be used for the chat history</div>
 
       <div className="mt-auto flex flex-col gap-4">
         <Button
           variant="secondary"
           className="w-full justify-start gap-1 font-medium"
+          onClick={handleNewChat}
         >
           <Sparkling />
           Start new chat

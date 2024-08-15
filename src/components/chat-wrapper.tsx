@@ -17,6 +17,7 @@ import { Button } from "./ui/button";
 import { Input } from "./input";
 import { AIAvatar, Copy, Check, Sparkling, SendPlane } from "./icons";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { TextEffect } from "./text-effect";
 
 export default function ChatWrapper({
   noSuggestion = false,
@@ -49,42 +50,8 @@ export default function ChatWrapper({
     );
   };
 
-  useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chats]);
-
-  return (
-    <section className="flex h-full w-full justify-center px-4 md:px-8 lg:flex-1 lg:px-16">
-      <div className="flex h-full w-full flex-col gap-16 pb-6 pt-12 lg:max-w-[712px] lg:gap-20 lg:pt-20">
-        {/* Chats area */}
-        <div className="flex h-full w-full flex-col gap-6 overflow-y-auto">
-          {chats?.map((chat: Message) => (
-            <MessageItem message={chat} key={chat.id} />
-          ))}
-          {/* Scroll hedefi */}
-          <div ref={bottomRef} />
-        </div>
-
-        <div className="mt-auto">
-          <ChatInput chatId={chatId} addMessage={addMessage} />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ChatInput({
-  chatId,
-  addMessage,
-}: {
-  chatId?: string;
-  addMessage: (message: Message) => void;
-}) {
   const [inputValue, setInputValue] = useState("");
   const pathname = usePathname();
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -120,27 +87,46 @@ function ChatInput({
     mutation.mutate();
   };
 
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
+
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="flex w-full gap-4">
-        <div className="flex-1">
-          <Input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask me anything..."
-            className="w-full rounded-lg border border-neutral-200"
-          />
+    <section className="flex h-full w-full justify-center px-4 md:px-8 lg:flex-1 lg:px-16">
+      <div className="flex h-full w-full flex-col gap-16 pb-6 pt-12 lg:max-w-[712px] lg:gap-20 lg:pt-20">
+        {/* Chats area */}
+        <div className="flex h-full w-full flex-col gap-6 overflow-y-auto">
+          {chats?.map((chat: Message) => (
+            <MessageItem message={chat} key={chat.id} />
+          ))}
+          {/* Scroll hedefi */}
+          <div ref={bottomRef} />
         </div>
-        <Button
-          disabled={mutation.isLoading || !inputValue}
-          className="w-[104px]"
-        >
-          <SendPlane />
-          Submit
-        </Button>
-      </form>
-    </div>
+
+        <div className="mt-auto">
+          <form onSubmit={handleSubmit} className="flex w-full gap-4">
+            <div className="flex-1">
+              <Input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask me anything..."
+                className="w-full rounded-lg border border-neutral-200"
+              />
+            </div>
+            <Button
+              disabled={mutation.isLoading || !inputValue}
+              className="w-[104px]"
+            >
+              <SendPlane />
+              Submit
+            </Button>
+          </form>
+        </div>
+      </div>
+    </section>
   );
 }
 

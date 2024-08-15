@@ -77,7 +77,7 @@ export const sendMessage = async (message: string, chatId: string) => {
     ],
   });
 
-  return result;
+  return { message: "success" };
 };
 
 export const createChatTitle = async (title: string) => {

@@ -25,6 +25,11 @@ enum PaymentStatus {
   paid
 }
 
+enum SenderType {
+  USER
+  AI
+}
+
 model User {
   id                  String                @id @default(uuid())
   email               String                @unique
@@ -135,9 +140,4 @@ model Message {
   timestamp DateTime   @default(now())
 
   chat Chat @relation(fields: [chatId], references: [id])
-}
-
-enum SenderType {
-  USER
-  AI
 }

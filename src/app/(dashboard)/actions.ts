@@ -54,10 +54,32 @@ export const newChat = async () => {
 
   redirect(`/chat/${chat.id}`);
 };
+export const sendMessage = async (message: string, chatId: string) => {
+  const chat = await db.chat.findUnique({
+    where: { id: chatId },
+    include: { messages: true },
+  });
 
-/* 
-This function is used to create a chat title
-*/
+  const result = await model.generateContent(message);
+
+  await db.message.createMany({
+    data: [
+      {
+        chatId,
+        content: message,
+        sender: "USER",
+      },
+      {
+        chatId,
+        content: result.response.text(),
+        sender: "AI",
+      },
+    ],
+  });
+
+  return result;
+};
+
 export const createChatTitle = async (title: string) => {
   let prompt = `Your task is to create a concise, descriptive, and engaging chat title based on the given title: "${title}". Please select and provide the best possible title in plain text without any additional formatting.`;
 

@@ -82,7 +82,8 @@ export default function ChatWrapper({
       chatId: chatId || "",
       sender: SenderType.USER,
       content: inputValue,
-      timestamp: new Date(),
+      createdAt: new Date(),
+      updateAt: new Date(),
     };
 
     addMessage(userMessage);

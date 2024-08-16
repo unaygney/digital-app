@@ -158,11 +158,30 @@ export const getChats = async (chatId: string) => {
     include: {
       messages: {
         orderBy: {
-          timestamp: "asc",
+          createdAt: "asc",
         },
       },
     },
   });
 
   return chats;
+};
+export const reGenerate = async (id: number) => {
+  const message = await db.message.findUnique({
+    where: { id },
+    select: { content: true },
+  });
+
+  const promt = `Please rewrite the following response in a different way while preserving the original meaning. Aim for a more concise and clear explanation that remains friendly and easy to understand. Make sure to respond in the same language as the original content. Here is the content to be rewritten: ${message?.content} `;
+
+  const result = await model.generateContent(promt);
+
+  await db.message.update({
+    where: { id },
+    data: {
+      content: result.response.text(),
+    },
+  });
+
+  return { message: "success" };
 };

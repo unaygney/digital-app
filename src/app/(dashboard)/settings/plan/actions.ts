@@ -109,7 +109,7 @@ export const updateBillingPlan = async (data: PlanFormData) => {
 
     return { message: "Plan updated successfully", subscribe };
   } else {
-    console.log("Ödeme durumu:", createPayment.status);
+    console.log("payment situation:", createPayment.status);
     return { message: "Payment failed" };
   }
 };

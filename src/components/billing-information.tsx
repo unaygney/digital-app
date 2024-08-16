@@ -85,6 +85,8 @@ export default function BillingInformation() {
       return;
     }
 
+    const res2 = await createBillingInformation(values);
+
     const result = await stripe.confirmSetup({
       clientSecret,
       elements,
@@ -102,13 +104,19 @@ export default function BillingInformation() {
         payment_method as string,
       );
 
-      const res2 = await createBillingInformation(values);
-
       toast({
         description: "Payment information saved successfully!",
       });
 
-      reset(values);
+      reset({
+        email: "",
+        country: "",
+        address: "",
+        address2: "",
+        city: "",
+        state: "",
+        zip: "",
+      });
     }
   }
 

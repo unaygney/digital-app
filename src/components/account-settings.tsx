@@ -31,7 +31,7 @@ export default function AccountSettings({ id }: { id: string }) {
   const [defaultValues, setDefaultValues] = React.useState<any>(null);
   const { toast } = useToast();
   const router = useRouter();
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["user", id],
     queryFn: async () => await getUser(),
   });
@@ -52,7 +52,7 @@ export default function AccountSettings({ id }: { id: string }) {
   const form = useForm<AccountSettingsFormData>({
     resolver: zodResolver(accountSettingsSchema),
   });
-  const { setValue } = form;
+  const { setValue, reset } = form;
 
   useEffect(() => {
     if (defaultValues) {
@@ -68,7 +68,8 @@ export default function AccountSettings({ id }: { id: string }) {
     toast({
       description: res.message,
     });
-    router.refresh();
+    reset(values);
+    refetch();
   }
 
   return (
@@ -87,7 +88,7 @@ export default function AccountSettings({ id }: { id: string }) {
       </div>
 
       <div className="flex gap-4">
-        <div className="relative h-[104px] w-[104px] overflow-hidden rounded-full">
+        <div className="relative h-[104px] w-[104px] flex-shrink-0 overflow-hidden rounded-full">
           <Image
             src={defaultValues?.profileImage || "/placeholder-profile.png"}
             alt="profile image"

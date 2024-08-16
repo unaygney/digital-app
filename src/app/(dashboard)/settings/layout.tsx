@@ -1,4 +1,7 @@
+import { buttonVariants } from "@/components/ui/button";
 import NavLink from "@/components/ui/nav-link";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 export default function SettingsLayout({
   children,
 }: {
@@ -49,6 +52,24 @@ export default function SettingsLayout({
       </div>
       <hr className="pb-8" />
       {children}
+
+      <div className="fixed bottom-8 left-4">
+        <Link
+          className={cn(
+            buttonVariants({ variant: "secondary", size: "large" }),
+            "relative flex",
+          )}
+          href="/"
+        >
+          <div className="absolute -right-1 -top-1">
+            <span className="relative flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neutral-500 opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-neutral-300" />
+            </span>
+          </div>
+          Return to chat
+        </Link>
+      </div>
     </section>
   );
 }

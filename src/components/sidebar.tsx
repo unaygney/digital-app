@@ -180,8 +180,8 @@ export default function SideBar({
                 <MoreLine />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[229px] p-2">
-                <DropdownMenuItem>
-                  <Link className="flex gap-3" href={"/settings"}>
+                <DropdownMenuItem asChild>
+                  <Link className="flex h-full w-full gap-3" href={"/settings"}>
                     <Settings />
                     Settings
                   </Link>

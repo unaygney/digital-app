@@ -37,7 +37,6 @@ export default function ImageUploader({ id }: { id: string }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const router = useRouter();
 
   const { toast } = useToast();
   const queryClient = useQueryClient();

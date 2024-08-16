@@ -83,6 +83,8 @@ export const getPayments = async () => {
 export const createSetupIntent = async () => {
   const email = await getTokenAndVerify();
 
+  if (!email) return { message: "User not found" };
+
   const user = await db.user.findUnique({
     where: { email },
     include: { billingInformation: true },
@@ -96,7 +98,7 @@ export const createSetupIntent = async () => {
 
   const setupIntent = await stripe.setupIntents.create({
     payment_method_types: ["card"],
-    customer: customer.id,
+    customer: customer.id ?? null,
     metadata: { email, userId: user.id, customerId: customer.id },
   });
 

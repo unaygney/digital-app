@@ -1,5 +1,6 @@
 "use server";
 import { db } from "@/db";
+import { getTokenAndVerify } from "@/lib/auth";
 import { model } from "@/lib/gemini";
 
 import { cookies } from "next/headers";
@@ -8,49 +9,100 @@ import { redirect } from "next/navigation";
 export const logout = async () => {
   const token = cookies().delete("token");
 
-  return { message: "success" };
+  redirect("/");
 };
 export const sendFirstMessage = async (message: string) => {
+  const email = await getTokenAndVerify();
   const sessionId = cookies().get("session_id")?.value;
-  let promt = message;
+  let prompt = message;
 
-  const result = await model.generateContent(promt);
+  const result = await model.generateContent(prompt);
   const title = await createChatTitle(message);
 
-  //todo: if user already exist then you have to create the chat with the user
-  // we assume that the user is not right now.
+  let chat;
 
-  const chat = await db.chat.create({
-    data: {
-      sessionId,
-      title,
-      messages: {
-        createMany: {
-          data: [
-            {
-              content: message,
-              sender: "USER",
-            },
-            {
-              content: result.response.text(),
-              sender: "AI",
-            },
-          ],
+  if (email) {
+    const user = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    chat = await db.chat.create({
+      data: {
+        userId: user.id,
+        title,
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: message,
+                sender: "USER",
+              },
+              {
+                content: result.response.text(),
+                sender: "AI",
+              },
+            ],
+          },
         },
       },
-    },
-  });
+    });
+  } else {
+    chat = await db.chat.create({
+      data: {
+        sessionId,
+        title,
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: message,
+                sender: "USER",
+              },
+              {
+                content: result.response.text(),
+                sender: "AI",
+              },
+            ],
+          },
+        },
+      },
+    });
+  }
 
   redirect(`/chat/${chat.id}`);
 };
+
 export const newChat = async () => {
+  const email = await getTokenAndVerify();
   const sessionId = cookies().get("session_id")?.value;
 
-  const chat = await db.chat.create({
-    data: {
-      sessionId,
-    },
-  });
+  let chat;
+
+  if (email) {
+    const user = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    chat = await db.chat.create({
+      data: {
+        userId: user.id,
+      },
+    });
+  } else {
+    chat = await db.chat.create({
+      data: {
+        sessionId,
+      },
+    });
+  }
 
   redirect(`/chat/${chat.id}`);
 };
@@ -60,7 +112,11 @@ export const sendMessage = async (message: string, chatId: string) => {
     include: { messages: true },
   });
 
-  if (!chat?.title) {
+  if (!chat) {
+    throw new Error("Chat not found");
+  }
+
+  if (!chat.title) {
     const title = await createChatTitle(message);
     await db.chat.update({
       where: { id: chatId },
@@ -95,11 +151,9 @@ export const createChatTitle = async (title: string) => {
   return result.response.text();
 };
 export const getChats = async (chatId: string) => {
-  const sessionId = cookies().get("session_id")?.value;
-
   const chats = await db.chat.findMany({
     where: {
-      sessionId,
+      OR: [{ sessionId: chatId }, { userId: chatId }],
     },
     include: {
       messages: {

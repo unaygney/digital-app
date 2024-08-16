@@ -5,7 +5,13 @@ import SideBar from "./sidebar";
 import { Logo, Menu } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { User } from "@prisma/client";
-export default function Navbar({ user }: { user: Partial<User> | null }) {
+export default function Navbar({
+  user,
+  sideBardId,
+}: {
+  user: Partial<User> | null;
+  sideBardId: string | null;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -49,7 +55,12 @@ export default function Navbar({ user }: { user: Partial<User> | null }) {
               className="fixed left-0 top-0 z-50 h-full bg-white lg:hidden"
               style={{ width: "90%", overflow: "hidden" }}
             >
-              <SideBar open={open} setOpen={setOpen} user={user} />
+              <SideBar
+                open={open}
+                setOpen={setOpen}
+                user={user}
+                sessionId={sideBardId}
+              />
             </motion.div>
 
             <motion.div

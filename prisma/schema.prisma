@@ -137,7 +137,8 @@ model Message {
   chatId    String
   sender    SenderType
   content   String
-  timestamp DateTime   @default(now())
+  createdAt DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
 
   chat Chat @relation(fields: [chatId], references: [id])
 }

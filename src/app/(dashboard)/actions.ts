@@ -60,6 +60,14 @@ export const sendMessage = async (message: string, chatId: string) => {
     include: { messages: true },
   });
 
+  if (!chat?.title) {
+    const title = await createChatTitle(message);
+    await db.chat.update({
+      where: { id: chatId },
+      data: { title },
+    });
+  }
+
   const result = await model.generateContent(message);
 
   await db.message.createMany({
@@ -79,11 +87,28 @@ export const sendMessage = async (message: string, chatId: string) => {
 
   return { message: "success" };
 };
-
 export const createChatTitle = async (title: string) => {
   let prompt = `Your task is to create a concise, descriptive, and engaging chat title based on the given title: "${title}". Please select and provide the best possible title in plain text without any additional formatting.`;
 
   const result = await model.generateContent(prompt);
 
   return result.response.text();
+};
+export const getChats = async (chatId: string) => {
+  const sessionId = cookies().get("session_id")?.value;
+
+  const chats = await db.chat.findMany({
+    where: {
+      sessionId,
+    },
+    include: {
+      messages: {
+        orderBy: {
+          timestamp: "asc",
+        },
+      },
+    },
+  });
+
+  return chats;
 };

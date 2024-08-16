@@ -36,7 +36,7 @@ export default function SideBar({
   setOpen?: (open: boolean) => void;
   className?: string;
   user?: Partial<User> | null;
-  sessionId?: string;
+  sessionId?: string | null;
 }) {
   const queryClient = useQueryClient();
   const {
@@ -46,12 +46,11 @@ export default function SideBar({
   } = useQuery(["chats", sessionId], async () => await getChats(sessionId!), {
     enabled: !!sessionId,
   });
+
+  console.log(chats);
+
   const handleLogout = async () => {
     const res = await logout();
-
-    if (res.message === "success") {
-      window.location.reload();
-    }
   };
 
   const handleNewChat = async () => {

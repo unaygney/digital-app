@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 
 export default async function Home() {
   const email = await getTokenAndVerify();
-  const sessionId = cookies().get("session_id")?.value;
+  const sessionId = cookies().get("session_id")?.value ?? null;
   let user: Partial<User> | null = null;
 
   if (email) {
@@ -22,6 +22,10 @@ export default async function Home() {
     });
   }
 
+  const sideBarId = user?.id || sessionId;
+
+  console.log("sidebarıd => ", sideBarId);
+
   return (
     <div className="flex h-full w-full flex-col lg:flex-row">
       <Navbar user={user} />
@@ -29,7 +33,7 @@ export default async function Home() {
       <SideBar
         user={user}
         className="hidden w-full max-w-[240px] border-r border-neutral-200 lg:flex"
-        sessionId={sessionId}
+        sessionId={sideBarId}
       />
 
       <ChatWrapper />

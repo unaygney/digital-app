@@ -12,13 +12,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./input";
 import { AIAvatar, Copy, Check, Sparkling, SendPlane, Loading } from "./icons";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { ArrowDown, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 export default function ChatWrapper({
   noSuggestion = false,
   chatId,
@@ -28,6 +30,7 @@ export default function ChatWrapper({
 }) {
   const queryClient = useQueryClient();
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [showScrollButton, setShowScrollButton] = useState<boolean>(false);
   const {
     data: chats = [],
     isLoading,
@@ -84,6 +87,35 @@ export default function ChatWrapper({
 
     mutation.mutate();
   };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setShowScrollButton(false);
+        } else {
+          setShowScrollButton(true);
+        }
+      },
+      { threshold: 1 },
+    );
+
+    // Ref değerini bir değişkene atıyoruz
+    const currentBottomRef = bottomRef.current;
+
+    if (currentBottomRef) {
+      observer.observe(currentBottomRef);
+    }
+
+    return () => {
+      if (currentBottomRef) {
+        observer.unobserve(currentBottomRef);
+      }
+    };
+  }, [bottomRef]);
+
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -93,13 +125,36 @@ export default function ChatWrapper({
 
   return (
     <section className="flex h-full w-full justify-center px-4 md:px-8 lg:flex-1 lg:px-16">
-      <div className="flex h-full w-full flex-col gap-16 pb-6 pt-12 lg:max-w-[712px] lg:gap-20 lg:pt-20">
+      <div className="h-100vh relative flex w-full flex-col gap-16 pb-6 pt-12 lg:max-w-[712px] lg:gap-20 lg:pt-20">
         {/* Chats area */}
         <AnimatePresence>
-          <div className="no-scrollbar flex h-full w-full flex-col gap-6 overflow-y-auto">
+          <div className="no-scrollbar relative flex h-full w-full flex-col gap-6 overflow-y-auto">
+            {/* Loading State */}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="m-auto flex w-full max-w-[320px] flex-col items-center gap-5 p-6"
+              >
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full shadow">
+                  <Loader2 className="animate-spin text-indigo-700" />
+                </span>
+                <div className="flex flex-col items-center text-center">
+                  <h6 className="text-xl font-medium leading-7 text-neutral-900">
+                    Loading...
+                  </h6>
+                  <p className="text-base font-normal leading-6 text-neutral-900">
+                    Fetching data, it may take a while
+                  </p>
+                </div>
+              </motion.div>
+            )}
             {chats?.map((chat: Message) => (
               <MessageItem message={chat} key={chat.id} />
             ))}
+
             {/* Scroll hedefi */}
             <div ref={bottomRef} />
           </div>
@@ -120,6 +175,28 @@ export default function ChatWrapper({
               </span>
               <Loading />
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showScrollButton && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              onClick={scrollToBottom}
+              className={cn(
+                buttonVariants({
+                  variant: "secondary",
+                  size: "medium",
+                }),
+                "fixed bottom-20 left-1/2 mx-auto flex -translate-x-1/2 transform items-center gap-2",
+              )}
+            >
+              <ArrowDown className="h-4 w-4 text-neutral-900" />
+              Jump to bottom
+            </motion.button>
           )}
         </AnimatePresence>
 

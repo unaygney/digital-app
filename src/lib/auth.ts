@@ -29,13 +29,13 @@ export const isAuthPages = (url: string) => {
 
   return AUTH_PAGES.some((page) => page.startsWith(url));
 };
-export const getTokenAndVerify = async (): Promise<string> => {
+export const getTokenAndVerify = async (): Promise<string | undefined> => {
   const cookiesStore = cookies();
   const token = cookiesStore.get("token")?.value ?? "";
 
   const isValidToken = await verifyJwtToken(token);
 
-  if (!isValidToken || !isValidToken.email) return "token verification failed";
+  if (!isValidToken || !isValidToken.email) return undefined;
 
   return isValidToken.email as string;
 };

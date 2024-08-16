@@ -69,7 +69,6 @@ export const createBillingInformation = async (
 
   return { message: "Billing information created" };
 };
-
 export const getPayments = async () => {
   const user = await db.user.findUnique({
     where: { email: await getTokenAndVerify() },
@@ -82,7 +81,6 @@ export const getPayments = async () => {
 };
 export const createSetupIntent = async () => {
   const email = await getTokenAndVerify();
-
   if (!email) return { message: "User not found" };
 
   const user = await db.user.findUnique({
@@ -108,7 +106,6 @@ export const createSetupIntent = async () => {
       customerId: customer.id,
     },
   });
-
   return { clientSecret: setupIntent.client_secret };
 };
 export const updateBillingInformationWithPaymentMethod = async (
@@ -116,7 +113,6 @@ export const updateBillingInformationWithPaymentMethod = async (
 ) => {
   try {
     const email = await getTokenAndVerify();
-
     const user = await db.user.findUnique({
       where: { email },
       include: { billingInformation: true, subscription: true },
@@ -141,6 +137,7 @@ export const updateBillingInformationWithPaymentMethod = async (
 
     return { message: "Billing information updated" };
   } catch (e) {
-    console.log(e);
+    console.log("Error updating billing information:", e);
+    return { message: "Error updating billing information" };
   }
 };

@@ -27,7 +27,7 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="flex h-full w-full flex-col lg:flex-row">
-      <Navbar user={user} />
+      <Navbar user={user} sideBardId={sideBarId} />
 
       <SideBar
         user={user}

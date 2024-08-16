@@ -1,6 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState, useTransition } from "react";
-import { sendFirstMessage, sendMessage } from "@/app/(dashboard)/actions";
+import {
+  reGenerate,
+  sendFirstMessage,
+  sendMessage,
+} from "@/app/(dashboard)/actions";
 import { $Enums, Message, SenderType } from "@prisma/client";
 import ReactMarkdown from "react-markdown";
 import { AnimatePresence, motion } from "framer-motion";
@@ -63,7 +67,6 @@ export default function ChatWrapper({
       }
     },
     onSuccess: () => {
-      console.log("basarılı");
       queryClient.invalidateQueries(["chats", chatId]);
     },
     onError: (error) => {
@@ -243,11 +246,19 @@ function UserMessage({ message }: { message: Message }) {
 
 function AIMessage({ message }: { message: Message }) {
   const [copied, setCopied] = useState<boolean>(false);
-
+  const [loading, setLoading] = useState<boolean>(false);
+  const queryClient = useQueryClient();
   const handleCopy = () => {
     const plainText = removeMarkdown(message.content);
     navigator.clipboard.writeText(plainText);
     setCopied(true);
+  };
+
+  const handleGenerate = async (messageId: number) => {
+    setLoading(true);
+    await reGenerate(messageId);
+    queryClient.invalidateQueries(["chats", message.chatId]);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -341,8 +352,15 @@ function AIMessage({ message }: { message: Message }) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <Button variant="linkColor" size="medium">
-          <Sparkling className="text-indigo-700" />
+        <Button
+          onClick={() => handleGenerate(message.id)}
+          variant="linkColor"
+          size="medium"
+          disabled={loading}
+        >
+          <Sparkling
+            className={loading ? "text-neutral-400" : "text-indigo-700"}
+          />
           Regenerate
         </Button>
       </div>

@@ -24,11 +24,9 @@ export default async function Home() {
 
   const sideBarId = user?.id || sessionId;
 
-  console.log("sidebarıd => ", sideBarId);
-
   return (
     <div className="flex h-full w-full flex-col lg:flex-row">
-      <Navbar user={user} />
+      <Navbar user={user} sideBardId={sideBarId} />
 
       <SideBar
         user={user}

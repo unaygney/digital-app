@@ -47,8 +47,6 @@ export default function SideBar({
     enabled: !!sessionId,
   });
 
-  console.log(chats);
-
   const handleLogout = async () => {
     const res = await logout();
   };

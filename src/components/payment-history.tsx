@@ -23,8 +23,6 @@ export default function PaymentHistory() {
     async () => await getPayments(),
   );
 
-  console.log(payments);
-
   const handleDownload = async (url: string) => {
     try {
       const response = await fetch(url, {

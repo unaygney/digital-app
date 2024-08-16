@@ -6,7 +6,6 @@ import ReactMarkdown from "react-markdown";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import removeMarkdown from "remove-markdown";
-
 import {
   Tooltip,
   TooltipContent,
@@ -15,17 +14,16 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "./ui/button";
 import { Input } from "./input";
-import { AIAvatar, Copy, Check, Sparkling, SendPlane } from "./icons";
+import { AIAvatar, Copy, Check, Sparkling, SendPlane, Loading } from "./icons";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { TextEffect } from "./text-effect";
 
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 export default function ChatWrapper({
   noSuggestion = false,
-  chats: initialChats,
   chatId,
 }: {
   noSuggestion?: boolean;
-  chats?: Message[];
   chatId?: string;
 }) {
   const queryClient = useQueryClient();
@@ -97,13 +95,33 @@ export default function ChatWrapper({
     <section className="flex h-full w-full justify-center px-4 md:px-8 lg:flex-1 lg:px-16">
       <div className="flex h-full w-full flex-col gap-16 pb-6 pt-12 lg:max-w-[712px] lg:gap-20 lg:pt-20">
         {/* Chats area */}
-        <div className="flex h-full w-full flex-col gap-6 overflow-y-auto">
-          {chats?.map((chat: Message) => (
-            <MessageItem message={chat} key={chat.id} />
-          ))}
-          {/* Scroll hedefi */}
-          <div ref={bottomRef} />
-        </div>
+        <AnimatePresence>
+          <div className="no-scrollbar flex h-full w-full flex-col gap-6 overflow-y-auto">
+            {chats?.map((chat: Message) => (
+              <MessageItem message={chat} key={chat.id} />
+            ))}
+            {/* Scroll hedefi */}
+            <div ref={bottomRef} />
+          </div>
+        </AnimatePresence>
+
+        {/* Loading State */}
+        <AnimatePresence>
+          {mutation.isLoading && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex w-full max-w-[504px] items-center gap-3 rounded-lg border border-neutral-200 p-3"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-indigo-50">
+                <AIAvatar />
+              </span>
+              <Loading />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="mt-auto">
           <form onSubmit={handleSubmit} className="flex w-full gap-4">
@@ -165,13 +183,45 @@ function AIMessage({ message }: { message: Message }) {
   }, [copied]);
 
   return (
-    <div className="mr-auto flex max-w-lg flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-3">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="mr-auto flex w-full flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-3 lg:max-w-xl"
+    >
       <div className="flex gap-3">
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-indigo-50">
           <AIAvatar />
         </span>
-        <div>
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+        <div className="no-scrollbar relative w-full overflow-scroll">
+          <ReactMarkdown
+            components={{
+              code({ node, inline, className, children, ...props }: any) {
+                const match = /language-(\w+)/.exec(className || "");
+                const codeContent = String(children).replace(/\n$/, "");
+
+                return !inline && match ? (
+                  <div className="relative">
+                    <SyntaxHighlighter
+                      style={oneLight}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {codeContent}
+                    </SyntaxHighlighter>
+                  </div>
+                ) : (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          >
+            {message.content}
+          </ReactMarkdown>
         </div>
       </div>
       <div className="ml-auto flex items-center">
@@ -219,6 +269,6 @@ function AIMessage({ message }: { message: Message }) {
           Regenerate
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }

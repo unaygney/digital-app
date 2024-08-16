@@ -21,22 +21,31 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout, newChat } from "@/app/(dashboard)/actions";
+import { getChats, logout, newChat } from "@/app/(dashboard)/actions";
 import { usePathname } from "next/navigation";
+import { useQuery, useQueryClient } from "react-query";
 
 export default function SideBar({
   open,
   setOpen,
   className,
   user,
-  chats,
+  sessionId,
 }: {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   className?: string;
   user?: Partial<User> | null;
-  chats?: Chat[];
+  sessionId?: string;
 }) {
+  const queryClient = useQueryClient();
+  const {
+    data: chats = [],
+    isLoading,
+    error,
+  } = useQuery(["chats", sessionId], async () => await getChats(sessionId!), {
+    enabled: !!sessionId,
+  });
   const handleLogout = async () => {
     const res = await logout();
 
@@ -47,14 +56,14 @@ export default function SideBar({
 
   const handleNewChat = async () => {
     await newChat();
+    queryClient.invalidateQueries(["chats", sessionId]);
   };
 
   const pathname = usePathname();
   const activeChatId = pathname.split("/")[2];
 
-  // Aktif olan chat ve geçmiş olan chatleri ayırıyoruz
-  const activeChat = chats?.find((chat) => chat.id === activeChatId);
-  const pastChats = chats?.filter((chat) => chat.id !== activeChatId);
+  const activeChat = chats?.find((chat: any) => chat.id === activeChatId);
+  const pastChats = chats?.filter((chat: any) => chat.id !== activeChatId);
 
   return (
     <aside className={cn("flex h-full w-full flex-col px-4 py-6", className)}>
@@ -93,7 +102,7 @@ export default function SideBar({
             <p className="mt-4 text-xs font-medium leading-4 text-neutral-600">
               Past
             </p>
-            {pastChats.map((chat) => (
+            {pastChats.map((chat: any) => (
               <Link
                 key={chat.id}
                 className="flex gap-3"

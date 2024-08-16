@@ -18,21 +18,6 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
       },
     })) ?? null;
 
-  const chats = await db.chat.findMany({
-    where: {
-      sessionId,
-    },
-    include: {
-      messages: {
-        orderBy: {
-          timestamp: "asc",
-        },
-      },
-    },
-  });
-
-  const chat = chats.find((chat) => chat.id === id);
-
   return (
     <div className="flex h-full w-full flex-col lg:flex-row">
       <Navbar user={user} />
@@ -40,10 +25,10 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
       <SideBar
         user={user}
         className="hidden w-full max-w-[240px] border-r border-neutral-200 lg:flex"
-        chats={chats}
+        sessionId={sessionId}
       />
 
-      <ChatWrapper noSuggestion={true} chats={chat?.messages} chatId={id} />
+      <ChatWrapper noSuggestion={true} chatId={id} />
     </div>
   );
 }

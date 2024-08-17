@@ -4,6 +4,8 @@ import { db } from "@/db";
 import { signUpSchema } from "@/lib/validations";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
+import { NextRequest } from "next/server";
+import { cookies } from "next/headers";
 
 export async function create(data: {
   email: string;
@@ -12,6 +14,7 @@ export async function create(data: {
 }) {
   try {
     let isValid = signUpSchema.safeParse(data);
+    const sessionId = cookies().get("session_id")?.value ?? null;
 
     if (!isValid.success) {
       return { errors: isValid.error.flatten().fieldErrors };
@@ -31,43 +34,24 @@ export async function create(data: {
       return { errors: "Email is already in use" };
     }
 
-    // hast to password
+    // Hash the password
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(data.password, salt);
 
     // Set up defaultPreferences
     const defaultPreferences = {
-      comments: {
-        email: false,
-        push: false,
-        sms: false,
-      },
-      features: {
-        email: false,
-        push: false,
-        sms: false,
-      },
-      friend_requests: {
-        email: false,
-        push: false,
-        sms: false,
-      },
-      friend_updates: {
-        email: false,
-        push: false,
-        sms: false,
-      },
-      marketing: {
-        email: false,
-        push: false,
-        sms: false,
-      },
+      comments: { email: false, push: false, sms: false },
+      features: { email: false, push: false, sms: false },
+      friend_requests: { email: false, push: false, sms: false },
+      friend_updates: { email: false, push: false, sms: false },
+      marketing: { email: false, push: false, sms: false },
     };
 
     const invoiceStart = new Date();
     const invoiceEnd = new Date();
     invoiceEnd.setMonth(invoiceEnd.getMonth() + 1);
-    // Create user
+
+    // Create the user first
     let newUser = await db.user.create({
       data: {
         email: data.email,
@@ -95,6 +79,17 @@ export async function create(data: {
         },
       },
     });
+
+    // Check if there are chats associated with the sessionId
+    if (sessionId) {
+      await db.chat.updateMany({
+        where: { sessionId },
+        data: {
+          userId: newUser.id,
+          sessionId: null,
+        },
+      });
+    }
 
     return { message: "User created successfully" };
   } catch (e) {

@@ -18,13 +18,25 @@ import {
 } from "@/components/ui/tooltip";
 import { Button, buttonVariants } from "./ui/button";
 import { Input } from "./input";
-import { AIAvatar, Copy, Check, Sparkling, SendPlane, Loading } from "./icons";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  AIAvatar,
+  Copy,
+  Check,
+  Sparkling,
+  SendPlane,
+  Loading,
+  Mail,
+  Pen,
+  Timeline,
+  Chat,
+} from "./icons";
+import { isError, useMutation, useQuery, useQueryClient } from "react-query";
 
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { ArrowDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 export default function ChatWrapper({
   noSuggestion = false,
   chatId,
@@ -158,6 +170,14 @@ export default function ChatWrapper({
             {chats?.map((chat: Message) => (
               <MessageItem message={chat} key={chat.id} />
             ))}
+
+            {/* Suggestion Area */}
+            {!noSuggestion && chats.length < 1 && (
+              <Suggestion
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+              />
+            )}
 
             {/* Scroll hedefi */}
             <div ref={bottomRef} />
@@ -365,6 +385,102 @@ function AIMessage({ message }: { message: Message }) {
           Regenerate
         </Button>
       </div>
+    </motion.div>
+  );
+}
+
+function Suggestion({
+  inputValue,
+  setInputValue,
+}: {
+  inputValue: string;
+  setInputValue: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const SUGGESTION = [
+    {
+      id: 0,
+      title: "Draft email",
+      description: "Generate email for any occasion you need.",
+      icon: <Mail />,
+      background: "#EEF2FF",
+      prompt: "Write an email example.",
+    },
+    {
+      id: 1,
+      title: "Write an Essay",
+      description: "Generate essay for any occasion you need.",
+      icon: <Pen />,
+      background: "#F0FDF4",
+      prompt: "Write an essay about global warming.",
+    },
+    {
+      id: 2,
+      title: "Planning",
+      description: "Plan for any occasion, from holiday to family.",
+      icon: <Timeline />,
+      background: "#FDF4FF",
+      prompt: "Plan a trip to Paris.",
+    },
+    {
+      id: 3,
+      title: "Assistant",
+      description: "Become your personal assistant. Helping you.",
+      icon: <Chat />,
+      background: "#FFFBEB",
+      prompt: "Help me with my homework.",
+    },
+  ] as const;
+
+  const container = {
+    hidden: { opacity: 1, scale: 0 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+    },
+  };
+
+  return (
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="visible"
+      className="m-auto grid grid-cols-2 gap-4 md:gap-8 lg:grid-cols-4 lg:gap-4"
+    >
+      {SUGGESTION.map((suggestion) => (
+        <motion.button
+          key={suggestion.id}
+          onClick={() => setInputValue(suggestion.prompt)}
+          variants={item}
+          className="flex w-full flex-col gap-6 rounded-lg border border-neutral-200 bg-white p-4 text-start transition-colors duration-300 hover:bg-slate-100"
+        >
+          <span
+            style={{ backgroundColor: suggestion.background }}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg"
+          >
+            {suggestion.icon}
+          </span>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-sm font-semibold leading-5 text-neutral-900">
+              {suggestion.title}
+            </h2>
+            <p className="text-xs font-normal leading-4 text-neutral-600">
+              {suggestion.description}
+            </p>
+          </div>
+        </motion.button>
+      ))}
     </motion.div>
   );
 }

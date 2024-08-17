@@ -34,7 +34,7 @@ export default async function Home() {
         sessionId={sideBarId}
       />
 
-      <ChatWrapper />
+      <ChatWrapper noSuggestion={false} />
     </div>
   );
 }

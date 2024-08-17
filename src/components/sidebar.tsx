@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Logo,
   Close,
@@ -24,6 +24,18 @@ import {
 import { getChats, logout, newChat } from "@/app/(dashboard)/actions";
 import { usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "react-query";
+import { useCustomNavigationGuard } from "@/hooks/use-unsaved-changes";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import path from "path";
 
 export default function SideBar({
   open,
@@ -61,6 +73,31 @@ export default function SideBar({
 
   const activeChat = chats?.find((chat: any) => chat.id === activeChatId);
   const pastChats = chats?.filter((chat: any) => chat.id !== activeChatId);
+
+  const [leaveState, setLeaveState] = useState<boolean>(false);
+
+  const shouldShowModal = (chats: Chat[]): boolean => {
+    if (chats.length === 0) return false;
+
+    if (chats[0].userId) return false;
+
+    return !!sessionId;
+  };
+
+  const { pendingUrl } = useCustomNavigationGuard(
+    shouldShowModal(chats),
+    setLeaveState,
+  );
+
+  const handleConfirmLeave = () => {
+    setLeaveState(false);
+    window.location.href = pendingUrl as string;
+    console.log(pendingUrl);
+  };
+
+  const handleCancelLeave = () => {
+    setLeaveState(false);
+  };
 
   return (
     <aside className={cn("flex h-full w-full flex-col px-4 py-6", className)}>
@@ -194,7 +231,71 @@ export default function SideBar({
             </DropdownMenu>
           </div>
         )}
+
+        <LeaveAlertDialog
+          leaveState={leaveState}
+          onConfirm={handleConfirmLeave}
+          onCancel={handleCancelLeave}
+          sessionId={sessionId}
+        />
       </div>
     </aside>
+  );
+}
+
+function LeaveAlertDialog({
+  leaveState,
+  onConfirm,
+  onCancel,
+  sessionId,
+}: {
+  leaveState: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  sessionId?: string | undefined | null;
+}) {
+  return (
+    <AlertDialog open={leaveState}>
+      <AlertDialogContent className="max-w-[320px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Save your chat history?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Your chat history will be lost. Sign in or create an account to keep
+            your data.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex gap-3 lg:!flex-col lg:!space-x-0">
+          <div className="flex gap-3">
+            <AlertDialogCancel asChild>
+              <Button
+                className={cn(
+                  buttonVariants({ variant: "secondary" }),
+                  "flex-1",
+                )}
+                onClick={() =>
+                  (window.location.href = `/sign-up?redirect=${sessionId}`)
+                }
+              >
+                Create account
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                className={cn(buttonVariants({ variant: "primary" }), "flex-1")}
+                onClick={() =>
+                  (window.location.href = `/sign-in?redirect=${sessionId}`)
+                }
+              >
+                Sign in
+              </Button>
+            </AlertDialogAction>
+          </div>
+
+          <Button onClick={onConfirm} variant="linkColor" className="w-full">
+            Leave anyway
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

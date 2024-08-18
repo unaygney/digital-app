@@ -3,7 +3,7 @@ import "../globals.css";
 import { mainFont } from "@/lib/font";
 import { Toaster } from "@/components/ui/toaster";
 import Providers from "@/components/providers";
-
+import { Analytics } from "@vercel/analytics/react";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,6 +19,7 @@ export default function RootLayout({
       >
         <Providers>{children}</Providers>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

@@ -2,7 +2,7 @@ import { mainFont } from "@/lib/font";
 import "../globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-
+import { Analytics } from "@vercel/analytics/react";
 export default function LoginLayout({
   children,
 }: {
@@ -18,6 +18,7 @@ export default function LoginLayout({
       >
         <main className="h-full w-full bg-linear-page p-4">{children}</main>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

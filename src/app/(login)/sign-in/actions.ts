@@ -11,6 +11,7 @@ import { redirect } from "next/navigation";
 export const login = async (data: { email: string; password: string }) => {
   try {
     const cookieStore = cookies();
+    const sessionId = cookieStore.get("session_id")?.value ?? null;
 
     let { email, password } = data;
 
@@ -61,6 +62,17 @@ export const login = async (data: { email: string; password: string }) => {
       path: "/",
       maxAge: 60 * 60 * 2,
     });
+
+    // if user has a sessionId, update the userId and sessionId
+    if (sessionId) {
+      await db.chat.updateMany({
+        where: { sessionId },
+        data: {
+          userId: user.id,
+          sessionId: null,
+        },
+      });
+    }
     // return success message
     return {
       message: "Logged in successfully",
